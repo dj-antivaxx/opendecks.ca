@@ -14,19 +14,14 @@
         La Poubelle Magnifique, 1221 Crescent Street, Montreal, Quebec
     </div>
     
-    <div class="center">
-        <div class="left-torch">
-            <img src="static/torch.gif" width="50px" height="100px">
-        </div>
-        <div class="middle-text">
+    <div class="center_container">
+            <img src="static/torch.gif">
             OPEN DECKS
-        </div>
-        <div class="right-torch">
-            <img src="static/torch.gif" width="50px" height="100px">
-        </div>
+            <img src="static/torch.gif">
     </div>
 
     <div class="bottom-text"> 
+        Your instagram...
         <form method="post" enctype="multipart/form-data" novalidate>
             {{ form.email(size=20) }}
             <br>
@@ -44,47 +39,53 @@
 
 <style>
     html, body {
-        margin: 3vh;
-        height: 88vh;
+        margin: 5vh;
         background-color: black;
+	    overflow: hidden;
+        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     }
     body {
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         box-sizing: border-box;
-        border: ridge white 2px;
+        border: ridge white 2vw;
     }
-
+    .torch {
+	    min-width: 30vw;
+        max-width: 100%;
+        /* object-fit: scale-down; */
+	} 
     .top-text {
+	    display: block;
         color: white; 
-        font-size: 20px; 
-        padding-top: 15vh; 
+        font-size: 2vw;
+	    margin-top: 10vh;
+	    line-height: 0.5vw;
         text-align: center;
-        vertical-align: middle;
     }
-
-    .left-torch {
-        padding-right: 20vw;
-    }
-
-    .middle-text {
+    .middle-text {    
         white-space: nowrap;
         color: white;   
-        padding-top: 30px;
-        font-size: 50px;
+        font-size: 7vw;
     }
-
-    .right-torch {
-        padding-left: 20vw;
-    }
-
     .bottom-text {
-        padding-top: 40vh;
-        text-align: center;
+	    text-align: center;
         vertical-align: middle;
+	    padding-top: 40vh;
+        color: white;  
+        /* font-size: 1vw; */
     }
-
-    .center {
-        display: flex;
-        margin: 0;
+    .center_container {
+	    white-space: nowrap;
+	    color: white;
+	    display: flex;
+	    /* text-align: center; */
+	    font-size: 7vw;
+        padding: 10vw;
+        gap: 5vw;
         position: absolute;
         top: 50%;
         left: 50%;
