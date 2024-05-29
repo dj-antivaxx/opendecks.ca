@@ -12,7 +12,7 @@ class EmailForm(Form):
         validators.InputRequired(message="??"), 
         validators.Length(min=2, message="too short!"), 
         validators.Length(max=40, message="too long!")],
-        render_kw={'rows': 1, 'cols': 40, 'style':'resize:none;', 'placeholder': 'enter your instagram link to sign up...'})
+        render_kw={'rows': 1, 'cols': 40, 'style':'resize:none;background: black;color:white;font-family:Cambria, Cochin, Georgia, Times, "Times New Roman", serif;', 'placeholder': 'enter your instagram link to sign up...'})
     submit = SubmitField('subscribe', render_kw={'style':"border:none; background: lightgrey;"})
 
 @home.route('/', methods=('GET', 'POST'))
