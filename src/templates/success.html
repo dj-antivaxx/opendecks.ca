@@ -16,19 +16,19 @@
     
     <div class="center">
         <div class="left-torch">
-            <img src="static/torch.gif" width="50px" height="100px">
+            <img src="static/torch.gif" width="20vh" height="auto">
         </div>
         <div class="middle-text">
             OPEN DECKS
         </div>
         <div class="right-torch">
-            <img src="static/torch.gif" width="50px" height="100px">
+            <img src="static/torch.gif" width="20vh" height="auto">
         </div>
     </div>
 
     <div class="bottom-text"> 
-        <div style="color:white; font-size: 30px;">
-            got it. we will reach out...
+        <div class="text-test">
+            Thanks! We will reach out in 1-2 business days. Questions and inquires: dj@opendecks.ca
         </div>
     </div> 
     
@@ -36,47 +36,64 @@
 
 <style>
     html, body {
-        margin: 3vh;
-        height: 88vh;
+        margin: 5vh;
         background-color: black;
+	    overflow: hidden;
+        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     }
     body {
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         box-sizing: border-box;
-        border: ridge white 2px;
+        border: ridge white 2vw;
     }
-
+   
     .top-text {
+	    display: block;
         color: white; 
-        font-size: 20px; 
-        padding-top: 15vh; 
+        font-size: 2vw;
+	    margin-top: 10vh;
+	    line-height: 0.5vw;
         text-align: center;
-        vertical-align: middle;
-    }
-
-    .left-torch {
-        padding-right: 20vw;
     }
 
     .middle-text {
         white-space: nowrap;
         color: white;   
-        padding-top: 30px;
-        font-size: 50px;
+        font-size: 5vh;
     }
 
-    .right-torch {
-        padding-left: 20vw;
+    .text-test {
+        text-align: center;
+        vertical-align: middle;
+	    padding-bottom: 2vh;
+        font-size: 2vw;
+        color: white;  
+    }
+
+    .submit-button {
+        padding-bottom: 10vh;
+    }
+
+    .form-test {
+        padding-top: 1vh;
+        padding-bottom: 1vh;
     }
 
     .bottom-text {
-        padding-top: 40vh;
         text-align: center;
         vertical-align: middle;
+	    padding-top: 40vh;
+        color: white;  
     }
 
     .center {
         display: flex;
         margin: 0;
+        gap: 10vw;
         position: absolute;
         top: 50%;
         left: 50%;
