@@ -23,3 +23,10 @@ def insert_to_email_schema(email):
     connection.execute("INSERT INTO EMAILZ VALUES (NULL, ?, CURRENT_TIMESTAMP)", (email, ))
     connection.commit()
     connection.close()
+
+
+def get_signups():
+    connection = get_db_connection()
+    signups = connection.execute("SELECT EMAIL FROM EMAILZ").fetchall()
+    connection.close()
+    return [{'email': signup['EMAIL']} for signup in signups]
