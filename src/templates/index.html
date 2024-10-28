@@ -1,107 +1,144 @@
-<!-- templates/base.html -->
-
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <title>Open Decks!</title>
+    <style>
+        html,
+        body {
+            margin: 5vh;
+            background-color: black;
+            overflow: hidden;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: white;
+        }
+
+        body {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            border: ridge white 2vw;
+        }
+
+        .top-text,
+        .middle-text,
+        .bottom-text {
+            text-align: center;
+        }
+
+        .top-text {
+            font-size: 1.5vh;
+            margin-top: 10vh;
+        }
+
+        .bottom-text {
+            font-size: 2vh;
+            margin: 5vh 0;
+            margin-top: 10vh;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            gap: 5vh;
+            margin-top: 10vh;
+        }
+
+        .form-test {
+            margin: 2vh 0;
+        }
+
+        .signups-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 2vh;
+            word-wrap: break-word;
+            max-width: 50vw;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .back-button {
+            color: whitesmoke;
+            text-decoration: none;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .left-torch img,
+        .right-torch img {
+            width: 5vw;
+            height: 10vh;
+            object-fit: contain;
+        }
+
+        .open-decks {
+            display: flex;
+            align-items: center;
+            font-size: 7vh;
+        }
+    </style>
 </head>
 
-<body> 
+<body>
     <div class="top-text">
-        Thursday, 6th June 2024, 7:00 PM - 3:00 AM. <p>
-        La Poubelle Magnifique, 1221 Rue Crescent, Montreal, Quebec.
+        Thursday, 6th June 2024, 7:00 PM - 3:00 AM.
+        <p>La Poubelle Magnifique, 1221 Rue Crescent, Montreal, Quebec.</p>
+        <p>dj@opendecks.ca</p>
     </div>
-    
+
     <div class="center">
         <div class="left-torch">
-            <img src="static/torch.gif" width="20vh" height="auto">
+            <img src="static/torch.gif" alt="Left Torch">
         </div>
-        <div class="middle-text">
-            OPEN DECKS
+        <div class="open-decks">
+            <center>
+            {% if not show_signups %}
+            <a href="/signups" class="back-button">OPEN DECKS</a>
+            {% else %}
+            <a href="/" class="back-button">Back to Main Page</a>
+            {% endif %}
+            </center>
         </div>
         <div class="right-torch">
-            <img src="static/torch.gif" width="20vh" height="auto">
+            <img src="static/torch.gif" alt="Right Torch">
         </div>
     </div>
 
-    <div class="bottom-text"> 
-        <div>
+    {% if not show_signups %}
+    <div class="bottom-text">
         <form method="post" enctype="multipart/form-data" novalidate>
             <div class="form-test">
-            {{ form.email(size=20) }}
-            <br>
-            {% for error in form.email.errors %}    
-                    <span style="color: red;">{{ error }}</span>
-            {% endfor %}
-            </div>
-            <div class="submit-button">
-                <button type="submit" style="border: 0 none; background: none;" name="isubmit" value="x"><img src="static/submit.gif" width="70vw" height="auto">
-                    <!-- {{ form.submit() }} -->
+                {{ form.email(size=20) }}
+                <br>
+                {% for error in form.email.errors %}
+                <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+
+                <button type="submit"
+                    style="border: 0 none; background: none; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 2vh;">
+                    <a class="back-button">Submit</a>
                 </button>
-             </div>
+            </div>
         </form>
+    </div>
+
+    {% else %}
+    <center>
+        <div class="signups-list">
+            {% for signup in signups %}
+            {{ signup['email'] }}
+            {% endfor %}
         </div>
-    </div> 
-    
+    </center>
+    {% endif %}
 </body>
 
-<style>
-    html, body {
-        margin: 5vh;
-        background-color: black;
-	    overflow: hidden;
-        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    }
-    body {
-        position: absolute;
-        top:0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        box-sizing: border-box;
-        border: ridge white 2vw;
-    }
-   
-    .top-text {
-	    display: block;
-        color: white; 
-        font-size: 2vw;
-	    margin-top: 10vh;
-	    line-height: 0.5vw;
-        text-align: center;
-    }
-
-    .middle-text {
-        white-space: nowrap;
-        color: white;   
-        font-size: 5vh;
-    }
-
-
-    .form-test {
-        padding-top: 1vh;
-        padding-bottom: 1vh;
-    }
-
- .bottom-text {
-        text-align: center;
-        vertical-align: middle;
-	margin-top: 47vh;
-        color: white;  
-    }
-    .center {
-        display: flex;
-        margin: 0;
-        gap: 10vw;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-    }
-</style>
-
 </html>
-
