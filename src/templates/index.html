@@ -32,14 +32,37 @@
         }
 
         .top-text {
-            font-size: 1.5vh;
+            font-size: 2.5vh;
             margin-top: 10vh;
+            position: absolute;
+            top: calc(50% - 30vh);
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .top-text p {
+            margin-bottom: 1px;
+            margin-top: 1px;
+            white-space: nowrap;
+        }
+
+        .top-text p:last-child {
+            margin-bottom: 0;
         }
 
         .bottom-text {
             font-size: 2vh;
             margin: 5vh 0;
-            margin-top: 10vh;
+            margin-top: 20vh;
+            position: absolute;
+            top: calc(50% + 10px);
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bottom-text p {
+            margin-bottom: 1px;
+            margin-top: 1px;
         }
 
         .center {
@@ -48,7 +71,12 @@
             align-items: center;
             flex-grow: 1;
             gap: 5vh;
-            margin-top: 10vh;
+            font-size: 2vh;
+            margin: 5vh 0;
+            position: absolute;
+            top: calc(50% - 5vh);
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .form-test {
@@ -89,9 +117,8 @@
 
 <body>
     <div class="top-text">
-        Thursday, 6th June 2024, 7:00 PM - 3:00 AM.
+        <p>Thursday, November 7th 2024, 7:00 PM - 11:00.</p>
         <p>La Poubelle Magnifique, 1221 Rue Crescent, Montreal, Quebec.</p>
-        <p>dj@opendecks.ca</p>
     </div>
 
     <div class="center">
@@ -114,6 +141,10 @@
 
     {% if not show_signups %}
     <div class="bottom-text">
+        <p>dj@opendecks.ca</p>
+        <p>www.opendecks.ca</p>
+    </div>
+    <!-- <div class="bottom-text">
         <form method="post" enctype="multipart/form-data" novalidate>
             <div class="form-test">
                 {{ form.email(size=20) }}
@@ -128,7 +159,7 @@
                 </button>
             </div>
         </form>
-    </div>
+    </div> -->
 
     {% else %}
     <center>
