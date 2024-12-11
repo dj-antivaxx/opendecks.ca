@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <title>Open Decks!</title>
+    <style>
+        html, body {
+            margin: 5vh;
+            background-color: black;
+            overflow: hidden;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: white;
+        }
+
+        body {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            border: ridge white 2vw;
+        }
+
+        .header {
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            border-radius: 0 0 10px 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 10%);
+            gap: 10%;
+            justify-content: center;
+        }
+
+        .header-title {
+            font-size: 32px;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .left-torch img, .right-torch img {
+            width: 5vw;
+            height: 10vh;
+            object-fit: contain;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            align-items: center;
+        }
+
+        .card {
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .card-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div style="display: none">
+        Hello! Welcome to the open decks!
+    </div>
+
+    <div class="header">
+            <div class="left-torch">
+                <img src="https://mcusercontent.com/558c1074b18065bd5b923205d/images/5d5ef680-45bc-9b69-c8c4-0a5d04d632e0.gif" alt="Left Torch">
+            </div>
+            <div class="header-title">OPEN DECKS</div>
+            <div class="right-torch">
+                <img src="https://mcusercontent.com/558c1074b18065bd5b923205d/images/5d5ef680-45bc-9b69-c8c4-0a5d04d632e0.gif" alt="Right Torch">
+            </div>
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+            <div class="card-title">Hello!</div>
+            <div class="card-content">
+                Welcome to the Open Decks! :)
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer" style="display: none">
+        <p>You're receiving this email because you are cool! 
+        If you no longer wish to receive these emails, <a href="*|UNSUB|*">unsubscribe here</a>.</p>
+        <p>Our mailing address: <br>
+        *|HTML:LIST_ADDRESS_HTML|*</p>
+    </div>
+</body>
+</html>
