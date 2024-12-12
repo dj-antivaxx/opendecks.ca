@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Past Events - Open Decks</title>
+    <style>
+        html, body {
+            margin: 5vh;
+            background-color: black;
+            overflow: hidden;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: white;
+        }
+
+        body {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            border: ridge white 2vw;
+        }
+        
+        .content {
+            max-width: 800px;
+            margin: 5vh auto;
+        }
+        .back-link a {
+            margin-bottom: 2vh;
+            color: white;
+            text-decoration: none;
+            font-size: 1vw;
+        }
+        .menu {
+            margin-bottom: 4vh;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin-right: 2vh;
+            font-size: 1vw;
+        }
+        .menu a:hover {
+            text-decoration: underline;
+        }
+        h1 {
+            margin-top: 2vh;
+        }
+        h2 {
+            margin-top: 3vh;
+        }
+        p {
+            font-size: 1.8vw;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5vh;
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .left-torch img, .right-torch img {
+            width: 5vw;
+            height: 10vh;
+            object-fit: contain;
+        }
+
+        .lineup {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5vh;
+            font-size: 1vh;
+            text-align: center;
+        }
+
+        .entry {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3vh;
+        }
+
+        .artist {
+            font-weight: bold;
+            font-size: 2vh;
+        }
+
+        .time {
+            color: #cccccc;
+        }
+
+        .genre {
+            font-style: italic;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="back-link">
+            <a href="{{ url_for('home.index') }}">← Back to Home</a>
+        </div>
+        <h1>Past Events</h1>
+        <div class="menu">
+            <a href="{{ url_for('home.past_events', event='april') }}">April</a>
+            <a href="{{ url_for('home.past_events', event='may') }}">May</a>
+            <a href="{{ url_for('home.past_events', event='october') }}">October</a>
+            <a href="{{ url_for('home.past_events', event='november') }}">November</a>
+        </div>
+        {% if event == 'april' %}
+        <div class="center">
+            <div class="left-torch">
+                <img src="static/torch.gif" alt="Left Torch">
+            </div>
+            <div class="lineup">
+                <div class="entry">
+                    <div class="artist">...</div>
+                    <div class="time">x:xx - x:xx</div>
+                    <div class="genre">...</div>
+                </div>
+            </div>
+            <div class="right-torch">
+                <img src="static/torch.gif" alt="Right Torch">
+            </div>
+        </div>
+        {% elif event == 'may' %}
+        <div class="center">
+            <div class="left-torch">
+                <img src="static/torch.gif" alt="Left Torch">
+            </div>
+            <div class="lineup">
+                <div class="entry">
+                    <div class="artist">...</div>
+                    <div class="time">x:xx - x:xx</div>
+                    <div class="genre">...</div>
+                </div>
+            </div>
+            <div class="right-torch">
+                <img src="static/torch.gif" alt="Right Torch">
+            </div> 
+        </div>
+        {% elif event == 'october' %}
+        <div class="center">
+            <div class="left-torch">
+                <img src="static/torch.gif" alt="Left Torch">
+            </div>
+            <div class="lineup">
+                <div class="entry">
+                    <div class="artist">...</div>
+                    <div class="time">x:xx - x:xx</div>
+                    <div class="genre">...</div>
+                </div>
+            </div>
+            <div class="right-torch">
+                <img src="static/torch.gif" alt="Right Torch">
+            </div>
+        </div>
+        {% elif event == 'november' %}
+            <div class="center">
+                <div class="left-torch">
+                    <img src="static/torch.gif" alt="Left Torch">
+                </div>
+                <div class="lineup">
+                    <div class="entry">
+                        <div class="artist">deepy</div>
+                        <div class="time">7:00 - 7:30</div>
+                        <div class="genre">deep house</div>
+                    </div>
+        
+                    <div class="entry">
+                        <div class="artist">mathieu</div>
+                        <div class="time">7:30 - 8:00</div>
+                        <div class="genre">dub techno / breakbeat</div>
+                    </div>
+        
+                    <div class="entry">
+                        <div class="artist">dj tastykakes</div>
+                        <div class="time">8:00 - 8:30</div>
+                        <div class="genre">cunty prog house</div>
+                    </div>
+        
+                    <div class="entry">
+                       <div class="artist">sofrshsoyung</div>
+                        <div class="time">8:30 - 9:00</div>
+                        <div class="genre">garage / breakbeat</div>
+                    </div>
+        
+                    <div class="entry">
+                        <div class="artist">syntactic sugar</div>
+                        <div class="time">9:00 - 9:30</div>
+                        <div class="genre">techno ~ bass ~ funky ~ wonky</div>
+                    </div>
+        
+                    <div class="entry">
+                        <div class="artist">shmongle</div>
+                        <div class="time">9:30 - 10:00</div>
+                        <div class="genre">techno / electro</div>
+                    </div>
+        
+                    <div class="entry">
+                        <div class="artist">yaze</div>
+                        <div class="time">10:00 - 10:30</div>
+                        <div class="genre">techno / DnB</div>
+                    </div>
+        
+                    <div class="entry">
+                        <div class="artist">water</div>
+                        <div class="time">10:30 - 11:00</div>
+                        <div class="genre">downtempo / ritual music</div>
+                    </div>
+                </div>
+                <div class="right-torch">
+                    <img src="static/torch.gif" alt="Right Torch">
+                </div>
+            </div>
+        {% else %}
+        <div class="center">
+            <div class="left-torch">
+                <img src="static/torch.gif" alt="Left Torch">
+            </div>
+            <h1>OPEN DECKS</h1>
+            <div class="right-torch">
+                <img src="static/torch.gif" alt="Right Torch">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

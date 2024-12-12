@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up - Open Decks</title>
+    <style>
+        html, body {
+            margin: 5vh;
+            background-color: black;
+            overflow: hidden;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: white;
+        }
+
+        body {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            border: ridge white 2vw;
+        }
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5vh;
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+           
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 5vh auto;
+        }
+
+        a {
+            color: white;
+        }
+        
+        form {
+            margin-top: 2vh;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 1vh;
+            margin-bottom: 2vh;
+            background: black;
+            color: white;
+            border: 1px solid white;
+            font-family: inherit;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 1vh;
+            transform: scale(1.5);
+        }
+        
+        input[type="submit"] {
+            border: none;
+            background: lightgrey;
+            color: black;
+            padding: 1vh 2vh;
+
+            cursor: pointer;
+        }
+        
+        label {
+            display: block;
+        }
+    
+        
+        .back-link {
+            margin-bottom: 2vh;
+        }
+        
+        .error {
+            color: red;
+        
+        }
+  
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-top: 1vh;
+        }
+        
+        .checkbox-label label {
+            margin-left: 1vh;
+            margin-top: 1vh;
+        }
+        
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        .left-torch img, .right-torch img {
+            width: 5vw;
+            height: 10vh;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <div class="back-link">
+            <a href="{{ url_for('home.index') }}">← Back to Home</a>
+        </div>
+        <h1>Sign Up</h1>
+        <div class="center">
+            <div class="left-torch">
+                <img src="static/torch.gif" alt="Left Torch">
+            </div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <label for="name">{{ form.name.label }}</label>
+                {{ form.name }}
+                {% for error in form.name.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+
+                <label for="email">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+
+                <div class="checkbox-label">
+                    {{ form.agree }}
+                    <label for="agree">
+                        I agree with <a href="{{ url_for('home.terms_and_conditions') }}" target="_blank">terms and conditions</a>
+                    </label>
+                </div>
+
+                {% for error in form.agree.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+
+                {{ form.submit }}
+            </form>
+            <div class="right-torch">
+                <img src="static/torch.gif" alt="Right Torch">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
