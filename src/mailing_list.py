@@ -1,9 +1,13 @@
 import requests
 import json
 import base64
+import os
 
 from datetime import datetime
 from premailer import transform
+from dotenv import load_dotenv
+
+from flask import render_template_string
 
 def image_to_base64(image_path):
     with open(image_path, 'rb') as image_file:
@@ -43,7 +47,13 @@ def add_member_to_list(email, first_name, last_name, list_id, mailchimp_url, hea
     else:
         print(f'Error adding subscriber: {response.status_code}, {response.text}') 
 
-def send_welcome_email(api_key, data_center='us3', segment_tag='Welcome to the Open Decks!'):
+def send_welcome_email(name, email, data_center='us3', segment_tag='STK'):
+    load_dotenv()
+    api_key = os.getenv("MAILCHIMP_API_KEY")
+    if not api_key:
+        raise ValueError("Mailchimp API key is not set in environment variables.")
+
+
     mailchimp_url = f'https://{data_center}.api.mailchimp.com/3.0/'
     headers = {
         'Authorization': f'Bearer {api_key}'
@@ -51,7 +61,7 @@ def send_welcome_email(api_key, data_center='us3', segment_tag='Welcome to the O
     
     data = {
         'name': segment_tag,
-        'static_segment': ['dj.antivaxx@gmail.com']
+        'static_segment': [email]
     }
 
     list_id = get_list_id(mailchimp_url, headers)
@@ -60,7 +70,7 @@ def send_welcome_email(api_key, data_center='us3', segment_tag='Welcome to the O
     response = requests.post(f'{mailchimp_url}{segments_endpoint}', json=data, headers=headers)
     try:
         segment_id = response.json()['id']
-    except KeyError: # segment exists
+    except KeyError as e: # segment exists
         response = requests.get(f'{mailchimp_url}{segments_endpoint}', headers=headers, params={'count': 100, 'offset': 0})
         segments = response.json()['segments']
         # add emails to segment
@@ -76,10 +86,10 @@ def send_welcome_email(api_key, data_center='us3', segment_tag='Welcome to the O
             'segment_opts': {'saved_segment_id': segment_id}
         },
         'settings': {
-            'subject_line': 'Welcome to the Open Decks!',
+            'subject_line': 'SuperTuxKart Tournament - You Signed Up!',
             'from_name': 'DJ Antivaxx',
             'reply_to': 'dj.antivaxx@gmail.com',
-            'preview_text': ' Hello! Welcome to the open decks!',
+            'preview_text': ' You are locked in fam.',
         },
         'send_time': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     }
@@ -92,8 +102,8 @@ def send_welcome_email(api_key, data_center='us3', segment_tag='Welcome to the O
     else:
         print(f'Error creating campaign: {response.status_code}, {response.text}')
 
-    with open('welcome_email.html', 'r') as f:
-        html_content = transform(f.read())
+    with open('./src/templates/welcome_email.html', 'r') as f:
+        html_content = transform(render_template_string(f.read(), **{'name': name}))
     
     content_endpoint = f'campaigns/{campaign_id}/content'
     data = {

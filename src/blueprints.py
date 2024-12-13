@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from wtforms import StringField, SubmitField, BooleanField, validators
+from wtforms import StringField, SubmitField, BooleanField, validators, ValidationError
 from flask_wtf import FlaskForm
 from database import insert_signup
-
+from mailing_list import send_welcome_email
+import re
 home = Blueprint('home', __name__)
 
 
@@ -27,7 +28,7 @@ class SignUpForm(FlaskForm):
         'Email',
         validators=[
             validators.InputRequired(message="Email is required."),
-            # validators.Email(message="Invalid email address."),
+            validators.Email(message="Invalid email address."),
             validators.Length(max=100, message="Email must be less than 100 characters.")
         ],
         render_kw={
@@ -50,6 +51,10 @@ class SignUpForm(FlaskForm):
         }
     )
 
+    def validate_name(self, field):
+        if not re.match(r'^\w+$', field.data):  # Matches alphanumeric characters and underscores
+            raise ValidationError("Name must contain only alphanumeric characters and underscores.")
+
 
 @home.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
@@ -60,13 +65,15 @@ def sign_up():
             email=form.email.data,
             agree=form.agree.data
         )
-        return redirect(url_for('home.thank_you'))
+        send_welcome_email(form.name.data, form.email.data)
+        return redirect(url_for('home.thank_you', name=form.name.data))
     return render_template('sign_up.html', form=form)
 
 
 @home.route('/thank_you', methods=['GET'])
 def thank_you():
-    return render_template('thank_you.html')
+    name = request.args.get('name', 'fam')
+    return render_template('thank_you.html', name=name)
 
 
 @home.route('/tournament_info', methods=['GET'])
