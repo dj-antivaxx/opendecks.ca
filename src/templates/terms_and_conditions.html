@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Terms and Conditions - Open Decks</title>
+    <style>
+
+        html, body {
+            margin: 5vh;
+            background-color: black;
+            overflow: hidden;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: white;
+        }
+
+        body {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            border: ridge white 2vw;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5vh;
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2vh;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 5vh auto;
+        }
+
+        a {
+            color: white;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            margin-bottom: 2vh;
+        }
+
+        .left-torch img, .right-torch img {
+            width: 5vw;
+            height: 10vh;
+            object-fit: contain;
+        }
+
+        .lineup {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5vh;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="back-link">
+            <a href="{{ url_for('home.sign_up') }}">← Back to signing up</a>
+        </div>
+        <h1>Terms and Conditions</h1>
+        <div class="center">
+            <div class="left-torch">
+                <img src="static/torch.gif" alt="Left Torch">
+            </div>
+            <div class="lineup">
+                <p>I agree to be cool and chill.</p>
+                <p>My personal data (DJ name) will be publicly available. The email address will be hidden.</p>
+                <p>I allow DJ Antivaxx to send me spam (promotional emails) once in a while.</p>
+            </div>
+            <div class="right-torch">
+                <img src="static/torch.gif" alt="Right Torch">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

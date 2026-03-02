@@ -7,26 +7,37 @@ def get_db_connection():
     return conn
 
 
-def create_email_schema(connection):
-    schema_email = """
-    CREATE TABLE EMAILZ (
-        ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        EMAIL TEXT NOT NULL,
-        EMAILTIME TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+def create_signup_schema(connection):
+    schema_signup = """
+    CREATE TABLE IF NOT EXISTS signups (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        agree INTEGER NOT NULL,
+        signup_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
     """
-    connection.executescript(schema_email)
+    connection.executescript(schema_signup)
 
 
-def insert_to_email_schema(email):
+def insert_signup(name, email, agree):
     connection = get_db_connection()
-    connection.execute("INSERT INTO EMAILZ VALUES (NULL, ?, CURRENT_TIMESTAMP)", (email, ))
+    connection.execute(
+        "INSERT INTO signups (name, email, agree) VALUES (?, ?, ?)",
+        (name, email, int(agree))
+    )
     connection.commit()
     connection.close()
 
 
 def get_signups():
     connection = get_db_connection()
-    signups = connection.execute("SELECT EMAIL FROM EMAILZ").fetchall()
+    signups = connection.execute("SELECT name, email, agree FROM signups").fetchall()
     connection.close()
-    return [{'email': signup['EMAIL']} for signup in signups]
+    return [
+        {
+            'name': signup['name'],
+            'email': signup['email'],
+            'agree': bool(signup['agree'])
+        } for signup in signups
+    ]

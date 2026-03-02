@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
     <title>Open Decks!</title>
     <style>
-        html,
-        body {
+        html, body {
             margin: 5vh;
             background-color: black;
             overflow: hidden;
@@ -25,151 +23,97 @@
             border: ridge white 2vw;
         }
 
-        .top-text,
-        .middle-text,
-        .bottom-text {
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5vh;
+            margin-top: 5vh;
+        }
+
+        .header h1 {
             text-align: center;
-        }
-
-        .top-text {
-            font-size: 2.5vh;
-            margin-top: 10vh;
-            position: absolute;
-            top: calc(50% - 30vh);
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .top-text p {
-            margin-bottom: 1px;
-            margin-top: 1px;
-            white-space: nowrap;
-        }
-
-        .top-text p:last-child {
-            margin-bottom: 0;
-        }
-
-        .bottom-text {
-            font-size: 2vh;
-            margin: 5vh 0;
-            margin-top: 20vh;
-            position: absolute;
-            top: calc(50% + 10px);
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .bottom-text p {
-            margin-bottom: 1px;
-            margin-top: 1px;
         }
 
         .center {
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-grow: 1;
             gap: 5vh;
-            font-size: 2vh;
-            margin: 5vh 0;
             position: absolute;
-            top: calc(50% - 5vh);
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        .form-test {
-            margin: 2vh 0;
-        }
-
-        .signups-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 2vh;
-            word-wrap: break-word;
-            max-width: 50vw;
-            text-align: center;
-            display: inline-block;
-        }
-
-        .back-button {
-            color: whitesmoke;
-            text-decoration: none;
-            margin-top: 20px;
-            display: inline-block;
-        }
-
-        .left-torch img,
-        .right-torch img {
+        .left-torch img, .right-torch img {
             width: 5vw;
             height: 10vh;
             object-fit: contain;
         }
 
-        .open-decks {
+        .menu {
             display: flex;
-            align-items: center;
-            font-size: 7vh;
+            flex-direction: column;
+            gap: 2.5vh;
+            font-size: 1.8vh;
+            text-align: center;
+        }
+
+        .entry {
+            display: flex;
+            flex-direction: column;
+            gap: 5vh;
+        }
+
+        .link a {
+            font-weight: bold;
+            font-size: 3vh;
+            color: white;
+            text-decoration: none;
+        }
+
+        .link a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 5vh;
+            width: 100%;
+            text-align: center;
+            font-size: 1vh;
+        }
+
+        .footer a {
+            color: white;
+            
         }
     </style>
 </head>
-
 <body>
-    <div class="top-text">
-        <p>Thursday, November 7th 2024, 7:00 PM - 11:00.</p>
-        <p>La Poubelle Magnifique, 1221 Rue Crescent, Montreal, Quebec.</p>
-    </div>
-
-    <div class="center">
+    <div class="header">
         <div class="left-torch">
-            <img src="static/torch.gif" alt="Left Torch">
+            <img src="{{ url_for('static', filename='torch.gif') }}" alt="Left Torch">
         </div>
-        <div class="open-decks">
-            <center>
-            {% if not show_signups %}
-            <a href="/signups" class="back-button">OPEN DECKS</a>
-            {% else %}
-            <a href="/" class="back-button">Back to Main Page</a>
-            {% endif %}
-            </center>
-        </div>
+        <h1>OPEN DECKS</h1>
         <div class="right-torch">
-            <img src="static/torch.gif" alt="Right Torch">
+            <img src="{{ url_for('static', filename='torch.gif') }}" alt="Right Torch">
         </div>
     </div>
-
-    {% if not show_signups %}
-    <div class="bottom-text">
-        <p>dj@opendecks.ca</p>
-        <p>www.opendecks.ca</p>
-    </div>
-    <!-- <div class="bottom-text">
-        <form method="post" enctype="multipart/form-data" novalidate>
-            <div class="form-test">
-                {{ form.email(size=20) }}
-                <br>
-                {% for error in form.email.errors %}
-                <span style="color: red;">{{ error }}</span>
-                {% endfor %}
-
-                <button type="submit"
-                    style="border: 0 none; background: none; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 2vh;">
-                    <a class="back-button">Submit</a>
-                </button>
+    <div class="center">
+        <div class="menu">
+            <div class="entry">
+                <div class="link"><a href="{{ url_for('home.tournament_info') }}">SuperTuxKart Tournament</a></div>
+                <div class="link"><a href="{{ url_for('home.sign_up') }}">Sign Up</a></div>
+                <div class="link"><a href="{{ url_for('home.past_events') }}">Past Events</a></div>
             </div>
-        </form>
-    </div> -->
-
-    {% else %}
-    <center>
-        <div class="signups-list">
-            {% for signup in signups %}
-            {{ signup['email'] }}
-            {% endfor %}
         </div>
-    </center>
-    {% endif %}
+    </div>
+    <div class="footer">
+        <p>Open Decks, 2024.</p> 
+        <p>dj_antivaxx@opendecks.ca</p> 
+        <p><a href="https://github.com/dj-antivaxx/opendecks.ca">Github</a></p>
+    </div>
 </body>
-
 </html>
