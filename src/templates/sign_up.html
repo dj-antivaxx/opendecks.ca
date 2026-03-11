@@ -1,160 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up - Open Decks</title>
-    <style>
-        html, body {
-            margin: 5vh;
-            background-color: black;
-            overflow: hidden;
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            color: white;
-        }
-
-        body {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            box-sizing: border-box;
-            border: ridge white 2vw;
-        }
-        .center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 5vh;
-            position: absolute;
-            top: 60%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-           
-        }
-
-        .content {
-            max-width: 800px;
-            margin: 5vh auto;
-        }
-
-        a {
-            color: white;
-        }
-        
-        form {
-            margin-top: 2vh;
-        }
-        
-        input[type="text"],
-        input[type="email"],
-        select {
-            width: 100%;
-            padding: 1vh;
-            margin-bottom: 2vh;
-            background: black;
-            color: white;
-            border: 1px solid white;
-            font-family: inherit;
-        }
-        
-        input[type="checkbox"] {
-            margin-right: 1vh;
-            transform: scale(1.5);
-        }
-        
-        input[type="submit"] {
-            border: none;
-            background: lightgrey;
-            color: black;
-            padding: 1vh 2vh;
-
-            cursor: pointer;
-        }
-        
-        label {
-            display: block;
-        }
-    
-        
-        .back-link {
-            margin-bottom: 2vh;
-        }
-        
-        .error {
-            color: red;
-        
-        }
-  
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            margin-top: 1vh;
-        }
-        
-        .checkbox-label label {
-            margin-left: 1vh;
-            margin-top: 1vh;
-        }
-        
-        .checkbox-label a:hover {
-            text-decoration: underline;
-        }
-
-        .left-torch img, .right-torch img {
-            width: 5vw;
-            height: 10vh;
-            object-fit: contain;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N10.AS Fundraiser from DJ Foreskin & DJ Antivaxx</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
-    <div class="content">
-        <div class="back-link">
-            <a href="{{ url_for('home.index') }}">← Back to Home</a>
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='n10_as_logo_small.png') }}" alt="N10.AS Logo">
+        <span class="crossover-x">x</span>
+        <img src="{{ url_for('static', filename='foreskin.png') }}" alt="DJ Foreskin Logo">
+    </div>
+
+    <div class="window">
+        <div class="title-bar">
+            <span>SUBMISSION INSTRUCTIONS</span>
+            <div class="close-btn"><span>x</span></div>
         </div>
-        <h1>Sign Up</h1>
-        <div class="center">
-            <div class="left-torch">
-                <img src="static/torch.gif" alt="Left Torch">
-            </div>
-            <form method="POST">
+        <div class="window-body">
+            <p class="description">Send us a message, sounds to sample or a voice recording, and we will air it LIVE on
+                <a href="https://n10.as">n10.as</a> radio during the special Fundraising Transmission hosted by
+                notorious ne’er-do-wells DJ Foreskin
+                and DJ Antivaxx.
+            </p>
+
+            <p class="description">Save the date: March 27th, 21:00 EST!
+            </p>
+
+            <p class="description">This show is a part of the 10 year anniversary fundraiser for n10.as world wide
+                wadio. The only thing we ask before submitting your message is to consider donating some money to n10.as
+                on <a href="https://n10.as/donate">n10.as/donate</a>. All proceeds go to maintaining FREE unadulterated
+                radio. Any amount matters, even $1! Please put "Open Decks Transmission” when asked if you are donating
+                on behalf of a show in the donation form.</p>
+
+            <p class="description">If you had already made a donation on behalf of a different show, you are still
+                welcome to submit!
+            </p>
+
+            <p class="description">ALL SUBMISSIONS WILL BE AIRED.
+            </p>
+
+            <form method="POST" enctype="multipart/form-data" id="signup-form">
                 {{ form.hidden_tag() }}
 
                 <label for="name">{{ form.name.label }}</label>
                 {{ form.name }}
                 {% for error in form.name.errors %}
-                    <div class="error">{{ error }}</div>
+                <div class="error">{{ error }}</div>
                 {% endfor %}
 
                 <label for="email">{{ form.email.label }}</label>
                 {{ form.email }}
                 {% for error in form.email.errors %}
-                    <div class="error">{{ error }}</div>
+                <div class="error">{{ error }}</div>
                 {% endfor %}
 
-                <div class="checkbox-label">
-                    {{ form.agree }}
-                    <label for="agree">
-                        I agree with <a href="{{ url_for('home.terms_and_conditions') }}" target="_blank">terms and conditions</a>
-                    </label>
+                <label for="n10as_message">{{ form.n10as_message.label }}</label>
+                {{ form.n10as_message }}
+                {% for error in form.n10as_message.errors %}
+                <div class="error">{{ error }}</div>
+                {% endfor %}
+
+                <label>Say something on the mic! (Max 5 min)</label>
+
+                <div class="recorder-box">
+                    <button type="button" id="record-btn" class="btn">● Start Recording</button>
+                    <button type="button" id="stop-btn" class="btn" disabled>■ Stop</button>
+                    <span class="timer" id="timer">00:00</span>
+                    <span class="recording-status" id="recording-status">REC</span>
+                    <div id="audio-playback-container" style="margin-top: 10px; display: none;">
+                        <audio id="audio-playback" controls style="width: 100%; height: 30px;"></audio>
+                        <p style="font-size: 11px; margin: 5px 0 0 0;">(Recording attached to form)</p>
+                    </div>
                 </div>
 
-                {% for error in form.agree.errors %}
-                    <div class="error">{{ error }}</div>
+                <div class="or-divider">- OR -</div>
+
+                <div>
+                    {{ form.mp3_file }}
+                </div>
+                {% for error in form.mp3_file.errors %}
+                <div class="error">{{ error }}</div>
                 {% endfor %}
 
-                {{ form.submit }}
+                <div style="text-align: right; margin-top: 15px;">
+                    <button type="submit" id="submit-btn" class="btn">Submit</button>
+                </div>
             </form>
-            <div class="right-torch">
-                <img src="static/torch.gif" alt="Right Torch">
-            </div>
         </div>
     </div>
+
+    <script>
+        // MediaRecorder State
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordedBlob = null;
+        let timerInterval;
+        let secondsElapsed = 0;
+        const MAX_RECORDING_SECONDS = 300;
+
+        // UI Elements
+        const recordBtn = document.getElementById('record-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const timerDisplay = document.getElementById('timer');
+        const statusDisplay = document.getElementById('recording-status');
+        const playbackContainer = document.getElementById('audio-playback-container');
+        const audioPlayback = document.getElementById('audio-playback');
+        const form = document.getElementById('signup-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const fileInput = document.getElementById('mp3_file');
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = formatTime(secondsElapsed);
+            if (secondsElapsed >= MAX_RECORDING_SECONDS) {
+                stopBtn.click(); // Auto-stop at 60s
+            }
+        }
+
+        recordBtn.addEventListener('click', async () => {
+            // If a file was already selected via the file input, clear it so we don't submit two files
+            fileInput.value = '';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstart = () => {
+                    audioChunks = [];
+                    secondsElapsed = 0;
+                    timerDisplay.textContent = "00:00";
+                    recordBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    statusDisplay.classList.add('active');
+                    playbackContainer.style.display = 'none';
+                    recordedBlob = null;
+
+                    timerInterval = setInterval(updateTimer, 1000);
+                };
+
+                mediaRecorder.onstop = () => {
+                    clearInterval(timerInterval);
+                    recordBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    statusDisplay.classList.remove('active');
+
+                    // Stop microhpne tracks to release the red dot
+                    stream.getTracks().forEach(track => track.stop());
+
+                    // Create blob and assign to playback
+                    let mimeType = mediaRecorder.mimeType || 'audio/webm';
+                    recordedBlob = new Blob(audioChunks, { type: mimeType });
+                    const audioUrl = URL.createObjectURL(recordedBlob);
+                    audioPlayback.src = audioUrl;
+                    playbackContainer.style.display = 'block';
+
+                    recordBtn.textContent = "● Re-Record";
+                };
+
+                mediaRecorder.start();
+
+            } catch (err) {
+                alert("Could not access microphone. Please ensure you have granted permission.");
+                console.error("Microphone Error:", err);
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+            }
+        });
+
+        // If the user chooses a file, clear any recorded audio to avoid confusion
+        fileInput.addEventListener('change', () => {
+            if (fileInput.value) {
+                recordedBlob = null;
+                playbackContainer.style.display = 'none';
+                audioPlayback.src = '';
+                recordBtn.textContent = "● Start Recording";
+                timerDisplay.textContent = "00:00";
+            }
+        });
+
+        // Intercept form submission to inject the Blob if one was recorded
+        form.addEventListener('submit', (e) => {
+            // If they didn't record anything, just let the form submit normally (which uploads the selected file, if any).
+            if (!recordedBlob) return;
+
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Uploading...";
+
+            // Reconstruct the form explicitly
+            const formData = new FormData(form);
+
+            // Generate a filename based on the mime type
+            let ext = recordedBlob.type.includes('ogg') ? '.ogg' : 
+                      recordedBlob.type.includes('mp4') ? '.mp4' : '.webm';
+            // Overwrite the mp3_file key in the form data
+            formData.set('mp3_file', recordedBlob, 'recording_' + Date.now() + ext);
+
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url; // Handle Flask redirect explicitly
+                    } else if (response.ok) {
+                        return response.text().then(text => {
+                            // document.open + document.write completely rebuilds the DOM and safely re-executes all attached <script> tags
+                            document.open();
+                            document.write(text);
+                            document.close();
+                        });
+                    } else {
+                        alert("An error occurred during upload.");
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Submit";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Network error.");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Submit";
+                });
+        });
+
+    </script>
 </body>
+
 </html>

@@ -1,7 +1,7 @@
 flask
-flask-mysql
-flask_sqlalchemy
+flask-wtf
 wtforms
 email_validator
 requests
-premailer
+python-dotenv
+gunicorn
