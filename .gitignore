@@ -168,3 +168,4 @@ opendecks_deploy.zip
 *.ogg
 *.wav
 *.m4a
+.DS_Store
