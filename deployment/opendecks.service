@@ -1,0 +1,24 @@
+[Unit]
+Description=Gunicorn daemon for Open Decks
+After=network.target
+
+[Service]
+# We assume a user named 'pi'. Change this if your Pi user is different (e.g., 'admin' or something else).
+User=pi
+Group=www-data
+
+# Set the working directory to the project's root folder on the Pi
+WorkingDirectory=/home/pi/opendecks.ca
+
+# Load environment variables
+EnvironmentFile=/home/pi/opendecks.ca/.env
+
+# The Python virtual environment bin path
+Environment="PATH=/home/pi/opendecks.ca/venv/bin"
+
+# Start Gunicorn, binding it to localhost on port 5001. 
+# We specify 'app:app' because the Flask instance is named 'app' inside 'src/app.py'.
+ExecStart=/home/pi/opendecks.ca/venv/bin/gunicorn --workers 3 --bind 127.0.0.1:5001 --chdir /home/pi/opendecks.ca/src app:app
+
+[Install]
+WantedBy=multi-user.target
