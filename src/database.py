@@ -12,51 +12,48 @@ def get_db_connection():
 
 
 def create_signup_schema(connection):
-    schema_signup = """
-    CREATE TABLE IF NOT EXISTS signups (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL,
-        agree INTEGER NOT NULL,
-        n10as_message TEXT,
-        mp3_filename TEXT,
-        signup_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-    );
-    """
-    connection.executescript(schema_signup)
+    columns = [col[1] for col in connection.execute("PRAGMA table_info(signups)").fetchall()]
     
-    try:
-        connection.execute("ALTER TABLE signups ADD COLUMN n10as_message TEXT;")
-    except sqlite3.OperationalError as e:
-        if 'duplicate column name' not in str(e).lower():
-            print(f"Error adding n10as_message column: {e}")
-    
-    try:
-        connection.execute("ALTER TABLE signups ADD COLUMN mp3_filename TEXT;")
-    except sqlite3.OperationalError as e:
-        if 'duplicate column name' not in str(e).lower():
-            print(f"Error adding mp3_filename column: {e}")
+    if not columns:
+        # Fresh setup
+        connection.executescript("""
+        CREATE TABLE signups (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            signup_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+    elif 'name' in columns:
+        # Needs migration
+        connection.executescript("""
+        CREATE TABLE signups_new (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            signup_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT INTO signups_new (id, email, signup_time) SELECT id, email, signup_time FROM signups;
+        DROP TABLE signups;
+        ALTER TABLE signups_new RENAME TO signups;
+        """)
 
 
-def insert_signup(name, email, agree=1, n10as_message=None, mp3_filename=None):
+def insert_signup(email):
     with closing(get_db_connection()) as connection:
         with connection:
             connection.execute(
-                "INSERT INTO signups (name, email, agree, n10as_message, mp3_filename) VALUES (?, ?, ?, ?, ?)",
-                (name, email, int(agree), n10as_message, mp3_filename)
+                "INSERT INTO signups (email) VALUES (?)",
+                (email,)
             )
 
 
 def get_signups():
     with closing(get_db_connection()) as connection:
-        signups = connection.execute("SELECT name, email, agree, n10as_message, mp3_filename FROM signups").fetchall()
+        signups = connection.execute("SELECT id, email, signup_time FROM signups").fetchall()
         
     return [
         {
-            'name': signup['name'],
+            'id': signup['id'],
             'email': signup['email'],
-            'agree': bool(signup['agree']),
-            'n10as_message': signup['n10as_message'],
-            'mp3_filename': signup['mp3_filename']
+            'signup_time': signup['signup_time']
         } for signup in signups
     ]

@@ -1,5 +1,4 @@
 import os
-import argparse
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -17,8 +16,6 @@ app.register_blueprint(home)
 
 os.makedirs(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts'), exist_ok=True)
 
-app.config['MAX_CONTENT_LENGTH'] = 5.5 * 1024 * 1024
-
 secret_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts', '.secret')
 if os.path.exists(secret_file):
     with open(secret_file, 'rb') as f:
@@ -29,8 +26,11 @@ else:
         f.write(secret_key)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secret_key)
-app.config['DISABLE_DISCORD'] = os.environ.get('DISABLE_DISCORD', 'False').lower() in ('true', '1')
-app.config['DISABLE_EMAIL'] = os.environ.get('DISABLE_EMAIL', 'False').lower() in ('true', '1')
+app.config['ENABLE_DISCORD'] = os.environ.get('ENABLE_DISCORD', 'False').lower() in ('true', '1')
+app.config['ENABLE_EMAIL'] = os.environ.get('ENABLE_EMAIL', 'True').lower() in ('true', '1')
+app.config['DISCORD_WEBHOOK_URL'] = os.environ.get('DISCORD_WEBHOOK_URL')
+app.config['GMAIL_SENDER_EMAIL'] = os.environ.get('GMAIL_SENDER_EMAIL')
+app.config['GMAIL_APP_PASSWORD'] = os.environ.get('GMAIL_APP_PASSWORD')
 
 csrf = CSRFProtect(app)
 
@@ -55,14 +55,4 @@ while db_retries > 0:
 connection.close()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="opendecks.ca")
-    parser.add_argument('--disable-discord', action='store_true', help="turn off yo discord webhook notifications")
-    parser.add_argument('--disable-email', action='store_true', help="turn off yo email notifications")
-    args = parser.parse_args()
-    
-    if args.disable_discord:
-        app.config['DISABLE_DISCORD'] = True
-    if args.disable_email:
-        app.config['DISABLE_EMAIL'] = True
-
     app.run(host='0.0.0.0', port=5001)
