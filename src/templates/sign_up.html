@@ -1,251 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N10.AS Fundraiser from DJ Foreskin & DJ Antivaxx</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title></title>
+    <style>
+        body {
+            background-color: black;
+            color: #d3d3d3;
+            font-family: "Courier New", Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .info-container {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        #date-display, #countdown-display {
+            font-size: 16px;
+            font-weight: normal;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+        #date-display {
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            height: 35px;
+            width: 100%;
+            max-width: 350px;
+            box-sizing: border-box;
+        }
+        input[type="text"] {
+            background-color: black;
+            color: #d3d3d3;
+            border: 1px solid #d3d3d3;
+            padding: 5px 10px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
+            outline: none;
+            flex-grow: 1;
+            width: 0;
+            border-right: none;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus {
+            background-color: #111;
+        }
+        input[type="submit"] {
+            background-color: black;
+            color: #d3d3d3;
+            border: 1px solid #d3d3d3;
+            padding: 5px 20px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+        input[type="submit"]:hover {
+            background-color: #d3d3d3;
+            color: black;
+        }
+    </style>
 </head>
-
 <body>
-
-    <div class="logo-container">
-        <img src="{{ url_for('static', filename='n10_as_logo_small.png') }}" alt="N10.AS Logo">
-        <span class="crossover-x">x</span>
-        <img src="{{ url_for('static', filename='foreskin.png') }}" alt="DJ Foreskin Logo">
+    <div class="info-container">
+        <div id="date-display">...</div>
+        <div id="countdown-display">--d --h --m --s</div>
     </div>
-
-    <div class="window">
-        <div class="title-bar">
-            <span>SUBMISSION INSTRUCTIONS</span>
-            <div class="close-btn"><span>x</span></div>
-        </div>
-        <div class="window-body">
-            <p class="description">Send us a message, sounds to sample or a voice recording, and we will air it LIVE on
-                <a href="https://n10.as">n10.as</a> radio during the special Fundraising Transmission hosted by
-                notorious ne’er-do-wells DJ Foreskin
-                and DJ Antivaxx.
-            </p>
-
-            <p class="description">Save the date: March 27th, 21:00 EST!
-            </p>
-
-            <p class="description">This show is a part of the 10 year anniversary fundraiser for n10.as world wide
-                wadio. The only thing we ask before submitting your message is to consider donating some money to n10.as
-                on <a href="https://n10.as/donate">n10.as/donate</a>. All proceeds go to maintaining FREE unadulterated
-                radio. Any amount matters, even $1! Please put "Open Decks Transmission” when asked if you are donating
-                on behalf of a show in the donation form.</p>
-
-            <p class="description">If you had already made a donation on behalf of a different show, you are still
-                welcome to submit!
-            </p>
-
-            <p class="description">ALL SUBMISSIONS WILL BE AIRED.
-            </p>
-
-            <form method="POST" enctype="multipart/form-data" id="signup-form">
-                {{ form.hidden_tag() }}
-
-                <label for="name">{{ form.name.label }}</label>
-                {{ form.name }}
-                {% for error in form.name.errors %}
-                <div class="error">{{ error }}</div>
-                {% endfor %}
-
-                <label for="email">{{ form.email.label }}</label>
-                {{ form.email }}
-                {% for error in form.email.errors %}
-                <div class="error">{{ error }}</div>
-                {% endfor %}
-
-                <label for="n10as_message">{{ form.n10as_message.label }}</label>
-                {{ form.n10as_message }}
-                {% for error in form.n10as_message.errors %}
-                <div class="error">{{ error }}</div>
-                {% endfor %}
-
-                <label>Say something on the mic! (Max 5 min)</label>
-
-                <div class="recorder-box">
-                    <button type="button" id="record-btn" class="btn">● Start Recording</button>
-                    <button type="button" id="stop-btn" class="btn" disabled>■ Stop</button>
-                    <span class="timer" id="timer">00:00</span>
-                    <span class="recording-status" id="recording-status">REC</span>
-                    <div id="audio-playback-container" style="margin-top: 10px; display: none;">
-                        <audio id="audio-playback" controls style="width: 100%; height: 30px;"></audio>
-                        <p style="font-size: 11px; margin: 5px 0 0 0;">(Recording attached to form)</p>
-                    </div>
-                </div>
-
-                <div class="or-divider">- OR -</div>
-
-                <div>
-                    {{ form.mp3_file }}
-                </div>
-                {% for error in form.mp3_file.errors %}
-                <div class="error">{{ error }}</div>
-                {% endfor %}
-
-                <div style="text-align: right; margin-top: 15px;">
-                    <button type="submit" id="submit-btn" class="btn">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <form method="POST" id="signup-form">
+        {{ form.hidden_tag() }}
+        {{ form.email(type="text", placeholder="email address", autocomplete="off", spellcheck="false") }}
+        {{ form.submit() }}
+    </form>
 
     <script>
-        // MediaRecorder State
-        let mediaRecorder;
-        let audioChunks = [];
-        let recordedBlob = null;
-        let timerInterval;
-        let secondsElapsed = 0;
-        const MAX_RECORDING_SECONDS = 300;
-
-        // UI Elements
-        const recordBtn = document.getElementById('record-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const timerDisplay = document.getElementById('timer');
-        const statusDisplay = document.getElementById('recording-status');
-        const playbackContainer = document.getElementById('audio-playback-container');
-        const audioPlayback = document.getElementById('audio-playback');
-        const form = document.getElementById('signup-form');
-        const submitBtn = document.getElementById('submit-btn');
-        const fileInput = document.getElementById('mp3_file');
-
-        function formatTime(seconds) {
-            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const s = (seconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        function updateTimer() {
-            secondsElapsed++;
-            timerDisplay.textContent = formatTime(secondsElapsed);
-            if (secondsElapsed >= MAX_RECORDING_SECONDS) {
-                stopBtn.click(); // Auto-stop at 60s
+        function getNextTransmission() {
+            let now = new Date().getTime();
+            
+            for (let i = 0; i < 3; i++) {
+                let d = new Date();
+                let year = d.getFullYear();
+                let month = d.getMonth() + i;
+                if (month > 11) {
+                    year += Math.floor(month / 12);
+                    month = month % 12;
+                }
+                
+                let firstDay = new Date(Date.UTC(year, month, 1));
+                let dayOfWeek = firstDay.getUTCDay();
+                let offset = (5 - dayOfWeek + 7) % 7;
+                let fourthFriday = 1 + offset + 21;
+                
+                let marchSecondSunday = 1 + (7 - new Date(Date.UTC(year, 2, 1)).getUTCDay()) % 7 + 7;
+                let novFirstSunday = 1 + (7 - new Date(Date.UTC(year, 10, 1)).getUTCDay()) % 7;
+                
+                let startEDT = Date.UTC(year, 2, marchSecondSunday, 7);
+                let endEDT = Date.UTC(year, 10, novFirstSunday, 6);
+                
+                let targetUTCStartT = Date.UTC(year, month, fourthFriday, 21);
+                let tzOffset = (targetUTCStartT >= startEDT && targetUTCStartT < endEDT) ? 4 : 5;
+                
+                let startTime = Date.UTC(year, month, fourthFriday, 21 + tzOffset);
+                let endTime = Date.UTC(year, month, fourthFriday, 22 + tzOffset);
+                
+                if (now < endTime) {
+                    return {
+                        start: startTime,
+                        end: endTime,
+                        month: month,
+                        day: fourthFriday,
+                        year: year
+                    };
+                }
             }
         }
 
-        recordBtn.addEventListener('click', async () => {
-            // If a file was already selected via the file input, clear it so we don't submit two files
-            fileInput.value = '';
-
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-
-                mediaRecorder.ondataavailable = event => {
-                    if (event.data.size > 0) {
-                        audioChunks.push(event.data);
-                    }
-                };
-
-                mediaRecorder.onstart = () => {
-                    audioChunks = [];
-                    secondsElapsed = 0;
-                    timerDisplay.textContent = "00:00";
-                    recordBtn.disabled = true;
-                    stopBtn.disabled = false;
-                    statusDisplay.classList.add('active');
-                    playbackContainer.style.display = 'none';
-                    recordedBlob = null;
-
-                    timerInterval = setInterval(updateTimer, 1000);
-                };
-
-                mediaRecorder.onstop = () => {
-                    clearInterval(timerInterval);
-                    recordBtn.disabled = false;
-                    stopBtn.disabled = true;
-                    statusDisplay.classList.remove('active');
-
-                    // Stop microhpne tracks to release the red dot
-                    stream.getTracks().forEach(track => track.stop());
-
-                    // Create blob and assign to playback
-                    let mimeType = mediaRecorder.mimeType || 'audio/webm';
-                    recordedBlob = new Blob(audioChunks, { type: mimeType });
-                    const audioUrl = URL.createObjectURL(recordedBlob);
-                    audioPlayback.src = audioUrl;
-                    playbackContainer.style.display = 'block';
-
-                    recordBtn.textContent = "● Re-Record";
-                };
-
-                mediaRecorder.start();
-
-            } catch (err) {
-                alert("Could not access microphone. Please ensure you have granted permission.");
-                console.error("Microphone Error:", err);
+        function updateCountdown() {
+            let next = getNextTransmission();
+            let now = new Date().getTime();
+            
+            let display = document.getElementById("countdown-display");
+            let dateDisplay = document.getElementById("date-display");
+            
+            let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            let dateStr = `${monthNames[next.month]} ${next.day}, ${next.year}`;
+            
+            if (now >= next.start && now < next.end) {
+                dateDisplay.innerHTML = `TRANSMISSION IS LIVE.`;
+                display.innerHTML = `00d 00h 00m 00s`;
+                return;
             }
-        });
-
-        stopBtn.addEventListener('click', () => {
-            if (mediaRecorder && mediaRecorder.state === "recording") {
-                mediaRecorder.stop();
+            
+            let localDate = new Date(next.start);
+            let localOptions = { weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short' };
+            let localTimeStr = localDate.toLocaleString('en-US', localOptions);
+            
+            let displayStr = `${dateStr} @ 21:00 EST`;
+            if (!localTimeStr.includes('EST') && !localTimeStr.includes('EDT')) {
+                displayStr += ` (${localTimeStr})`;
             }
-        });
+            
+            dateDisplay.innerHTML = displayStr;
+            
+            let diff = next.start - now;
+            let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            display.innerHTML = `${days}d ${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(seconds).padStart(2,'0')}s`;
+        }
 
-        // If the user chooses a file, clear any recorded audio to avoid confusion
-        fileInput.addEventListener('change', () => {
-            if (fileInput.value) {
-                recordedBlob = null;
-                playbackContainer.style.display = 'none';
-                audioPlayback.src = '';
-                recordBtn.textContent = "● Start Recording";
-                timerDisplay.textContent = "00:00";
-            }
-        });
-
-        // Intercept form submission to inject the Blob if one was recorded
-        form.addEventListener('submit', (e) => {
-            // If they didn't record anything, just let the form submit normally (which uploads the selected file, if any).
-            if (!recordedBlob) return;
-
-            e.preventDefault();
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Uploading...";
-
-            // Reconstruct the form explicitly
-            const formData = new FormData(form);
-
-            // Generate a filename based on the mime type
-            let ext = recordedBlob.type.includes('ogg') ? '.ogg' : 
-                      recordedBlob.type.includes('mp4') ? '.mp4' : '.webm';
-            // Overwrite the mp3_file key in the form data
-            formData.set('mp3_file', recordedBlob, 'recording_' + Date.now() + ext);
-
-            fetch('/', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (response.redirected) {
-                        window.location.href = response.url; // Handle Flask redirect explicitly
-                    } else if (response.ok) {
-                        return response.text().then(text => {
-                            // document.open + document.write completely rebuilds the DOM and safely re-executes all attached <script> tags
-                            document.open();
-                            document.write(text);
-                            document.close();
-                        });
-                    } else {
-                        alert("An error occurred during upload.");
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = "Submit";
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Network error.");
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = "Submit";
-                });
-        });
-
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
     </script>
 </body>
-
 </html>

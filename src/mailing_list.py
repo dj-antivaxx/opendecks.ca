@@ -1,24 +1,17 @@
 import os
 import smtplib
 from email.message import EmailMessage
-from dotenv import load_dotenv
-from flask import render_template_string
 
-def send_welcome_email(name, receiver_email):
-    load_dotenv()
-    
-    sender_email = os.getenv("GMAIL_SENDER_EMAIL")
-    app_password = os.getenv("GMAIL_APP_PASSWORD")
-    
+def send_welcome_email(receiver_email, sender_email, app_password):
     if not sender_email or not app_password:
         raise ValueError("GMAIL_SENDER_EMAIL or GMAIL_APP_PASSWORD is not set in environment variables, my ass.")
 
     template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates', 'welcome_email.html')
     with open(template_path, 'r') as f:
-        html_content = render_template_string(f.read(), name=name)
+        html_content = f.read()
 
     msg = EmailMessage()
-    msg['Subject'] = 'We got chu Fam!!! 10 year anniversary fundraiser for n10.as'
+    msg['Subject'] = 'We gotchu, fam.'
     msg['From'] = f"DJ Antivaxx <{sender_email}>"
     msg['To'] = receiver_email
     
