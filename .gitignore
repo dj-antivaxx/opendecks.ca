@@ -171,3 +171,6 @@ opendecks_deploy.zip
 .DS_Store
 database.db
 deployment/
+
+# Node.js
+node_modules/
