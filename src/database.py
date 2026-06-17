@@ -4,10 +4,23 @@ from contextlib import closing
 
 
 def get_db_connection():
-    if os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ:
+    is_vercel = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ
+    if is_vercel:
         db_path = '/tmp/artifacts/database.db'
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
     else:
         db_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts', 'database.db')
+        try:
+            parent_dir = os.path.dirname(db_path)
+            os.makedirs(parent_dir, exist_ok=True)
+            test_file = os.path.join(parent_dir, '.write_test')
+            with open(test_file, 'w') as f:
+                f.write('test')
+            os.remove(test_file)
+        except Exception:
+            # Read-only filesystem, fallback to /tmp
+            db_path = '/tmp/artifacts/database.db'
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
     conn = sqlite3.connect(db_path, timeout=15.0)
     conn.execute('PRAGMA journal_mode=WAL;')
     conn.row_factory = sqlite3.Row
