@@ -12,7 +12,7 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -72,6 +72,79 @@
             background-color: #d3d3d3;
             color: black;
         }
+        
+        .past-episodes-container {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        #toggle-episodes {
+            color: #d3d3d3;
+            text-decoration: none;
+            font-size: 16px;
+            border-bottom: 1px dashed #d3d3d3;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        #toggle-episodes:hover {
+            color: #fff;
+            border-bottom: 1px solid #fff;
+        }
+        #episodes-list {
+            border: 1px solid #d3d3d3;
+            background-color: black;
+            padding: 15px;
+            text-align: left;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .episode-item {
+            margin-bottom: 15px;
+            border-bottom: 1px dotted #444;
+            padding-bottom: 15px;
+        }
+        .episode-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .episode-header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.1s;
+        }
+        .episode-header:hover {
+            color: #fff;
+        }
+        .episode-date {
+            color: #888;
+            margin-right: 15px;
+            white-space: nowrap;
+        }
+        .episode-title {
+            text-align: left;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        .player-container {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .no-episodes {
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -84,6 +157,25 @@
         {{ form.email(type="text", placeholder="email address", autocomplete="off", spellcheck="false") }}
         {{ form.submit() }}
     </form>
+
+    <div class="past-episodes-container">
+        <a href="#" id="toggle-episodes">past episodes</a>
+        <div id="episodes-list" class="hidden">
+            {% if shows %}
+                {% for show in shows %}
+                    <div class="episode-item">
+                        <div class="episode-header" onclick="togglePlayer('{{ show.id }}', '{{ show.mixcloud_url }}')">
+                            <span class="episode-date">[{{ show.date }}]</span>
+                            <span class="episode-title">{{ show.title }}</span>
+                        </div>
+                        <div id="player-container-{{ show.id }}" class="player-container hidden"></div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-episodes">no past episodes found</div>
+            {% endif %}
+        </div>
+    </div>
 
     <script>
         function getNextTransmission() {
@@ -165,6 +257,61 @@
 
         setInterval(updateCountdown, 1000);
         updateCountdown();
+
+        function togglePlayer(showId, mixcloudUrl) {
+            const container = document.getElementById(`player-container-${showId}`);
+            if (!container) return;
+            
+            if (!container.classList.contains('hidden')) {
+                container.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+            
+            // Close any other open players first
+            document.querySelectorAll('.player-container').forEach(c => {
+                c.classList.add('hidden');
+                c.innerHTML = '';
+            });
+            
+            try {
+                const urlObj = new URL(mixcloudUrl);
+                const feed = encodeURIComponent(urlObj.pathname);
+                // Use standard mini player (height 60px) in dark mode (omit light=1)
+                const embedUrl = `https://www.mixcloud.com/widget/iframe/?feed=${feed}&hide_cover=1&light=0&mini=1`;
+                
+                container.innerHTML = `
+                    <iframe 
+                        src="${embedUrl}" 
+                        width="100%" 
+                        height="60" 
+                        frameborder="0" 
+                        allow="autoplay"
+                        style="display: block; border: 0; margin-top: 10px;"
+                    ></iframe>`;
+                container.classList.remove('hidden');
+            } catch (e) {
+                console.error('Failed to load Mixcloud player:', e);
+            }
+        }
+
+        document.getElementById('toggle-episodes').addEventListener('click', function(e) {
+            e.preventDefault();
+            const list = document.getElementById('episodes-list');
+            const toggleLink = document.getElementById('toggle-episodes');
+            if (list.classList.contains('hidden')) {
+                list.classList.remove('hidden');
+                toggleLink.textContent = 'past episodes -';
+            } else {
+                list.classList.add('hidden');
+                toggleLink.textContent = 'past episodes';
+                // Close any active players
+                document.querySelectorAll('.player-container').forEach(c => {
+                    c.classList.add('hidden');
+                    c.innerHTML = '';
+                });
+            }
+        });
     </script>
 </body>
 </html>
