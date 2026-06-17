@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 import concurrent.futures
 from flask import Blueprint, render_template, request, redirect, url_for, current_app
@@ -40,6 +41,16 @@ def send_notifications_async(enable_discord, discord_webhook_url, discord_messag
 @home.route('/', methods=['GET', 'POST'])
 def index():
     form = SignUpForm()
+    
+    shows = []
+    shows_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'shows.json')
+    if os.path.exists(shows_path):
+        try:
+            with open(shows_path, 'r') as f:
+                shows = json.load(f)
+        except Exception as e:
+            print(f"Error loading shows catalog: {e}")
+
     if request.method == 'POST' and form.validate_on_submit():
         
         insert_signup(form.email.data)
@@ -61,7 +72,7 @@ def index():
         )
             
         return redirect(url_for('home.thank_you'))
-    return render_template('sign_up.html', form=form)
+    return render_template('sign_up.html', form=form, shows=shows)
 
 
 @home.route('/thank_you', methods=['GET'])
