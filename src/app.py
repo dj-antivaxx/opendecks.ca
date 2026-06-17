@@ -20,6 +20,16 @@ if is_vercel:
     artifacts_dir = '/tmp/artifacts'
 else:
     artifacts_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts')
+    try:
+        os.makedirs(artifacts_dir, exist_ok=True)
+        # Test writing to ensure the directory is writable
+        test_file = os.path.join(artifacts_dir, '.write_test')
+        with open(test_file, 'w') as f:
+            f.write('test')
+        os.remove(test_file)
+    except Exception:
+        # Read-only filesystem, fallback to /tmp/artifacts
+        artifacts_dir = '/tmp/artifacts'
 
 os.makedirs(artifacts_dir, exist_ok=True)
 
