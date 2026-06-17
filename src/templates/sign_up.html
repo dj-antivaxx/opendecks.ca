@@ -85,6 +85,10 @@
         {{ form.submit() }}
     </form>
 
+    <script type="module">
+        import { injectSpeedInsights } from 'https://cdn.jsdelivr.net/npm/@vercel/speed-insights@2/+esm';
+        injectSpeedInsights();
+    </script>
     <script>
         function getNextTransmission() {
             let now = new Date().getTime();

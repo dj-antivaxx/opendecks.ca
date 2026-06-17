@@ -1,0 +1,23 @@
+{
+  "name": "primary",
+  "version": "1.0.0",
+  "description": "1. **Initialize Virtual Environment**:    ```bash    python3 -m venv venv    source venv/bin/activate    pip install -r requirements.txt    ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dj-antivaxx/opendecks.ca.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dj-antivaxx/opendecks.ca/issues"
+  },
+  "homepage": "https://github.com/dj-antivaxx/opendecks.ca#readme",
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
