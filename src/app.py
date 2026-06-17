@@ -14,18 +14,31 @@ app.debug = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1')
 
 app.register_blueprint(home)
 
-os.makedirs(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts'), exist_ok=True)
+is_vercel = os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ
 
-secret_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts', '.secret')
-if os.path.exists(secret_file):
-    with open(secret_file, 'rb') as f:
-        secret_key = f.read()
+if is_vercel:
+    artifacts_dir = '/tmp/artifacts'
 else:
-    secret_key = os.urandom(32)
-    with open(secret_file, 'wb') as f:
-        f.write(secret_key)
+    artifacts_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts')
 
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secret_key)
+os.makedirs(artifacts_dir, exist_ok=True)
+
+secret_key = os.environ.get('SECRET_KEY')
+if not secret_key:
+    secret_file = os.path.join(artifacts_dir, '.secret')
+    if os.path.exists(secret_file):
+        with open(secret_file, 'rb') as f:
+            secret_key = f.read()
+    else:
+        secret_key = os.urandom(32)
+        try:
+            with open(secret_file, 'wb') as f:
+                f.write(secret_key)
+        except OSError:
+            # Fallback for read-only filesystem environment (Vercel)
+            pass
+
+app.config['SECRET_KEY'] = secret_key
 app.config['ENABLE_DISCORD'] = os.environ.get('ENABLE_DISCORD', 'False').lower() in ('true', '1')
 app.config['ENABLE_EMAIL'] = os.environ.get('ENABLE_EMAIL', 'True').lower() in ('true', '1')
 app.config['DISCORD_WEBHOOK_URL'] = os.environ.get('DISCORD_WEBHOOK_URL')
@@ -34,7 +47,7 @@ app.config['GMAIL_APP_PASSWORD'] = os.environ.get('GMAIL_APP_PASSWORD')
 
 csrf = CSRFProtect(app)
 
-db_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts', 'database.db')
+db_path = os.path.join(artifacts_dir, 'database.db')
 connection = sqlite3.connect(db_path)
 
 import time

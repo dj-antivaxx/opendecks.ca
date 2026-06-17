@@ -4,7 +4,10 @@ from contextlib import closing
 
 
 def get_db_connection():
-    db_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts', 'database.db')
+    if os.environ.get('VERCEL') == '1' or 'VERCEL' in os.environ:
+        db_path = '/tmp/artifacts/database.db'
+    else:
+        db_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'artifacts', 'database.db')
     conn = sqlite3.connect(db_path, timeout=15.0)
     conn.execute('PRAGMA journal_mode=WAL;')
     conn.row_factory = sqlite3.Row
