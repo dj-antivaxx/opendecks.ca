@@ -1,0 +1,24 @@
+<title>{{ page_title|default('Open Decks') }}</title>
+{% set desc = page_description|default('Open Decks is a project dedicated to connecting DJs and other beings.') %}
+{% set path = canonical_path|default(request.path) %}
+{% set canonical = site_url ~ path %}
+<meta name="description" content="{{ desc }}">
+<link rel="canonical" href="{{ canonical }}">
+<meta name="robots" content="{% if robots == 'noindex' or not search_index %}noindex, nofollow{% else %}index, follow{% endif %}">
+<meta property="og:site_name" content="Open Decks">
+<meta property="og:title" content="{{ page_title|default('Open Decks') }}">
+<meta property="og:description" content="{{ desc }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:type" content="{{ og_type|default('website') }}">
+{% if og_image %}
+<meta property="og:image" content="{{ og_image }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ og_image }}">
+{% else %}
+<meta name="twitter:card" content="summary">
+{% endif %}
+<meta name="twitter:title" content="{{ page_title|default('Open Decks') }}">
+<meta name="twitter:description" content="{{ desc }}">
+{% if json_ld %}
+<script type="application/ld+json">{{ json_ld|tojson }}</script>
+{% endif %}

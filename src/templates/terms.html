@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'seo_head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='opendecks.css') }}">
+</head>
+<body>
+    <div class="read-page">
+        <div class="nav-row">
+            <a class="nav-link" href="{{ url_for('home.index') }}">back</a>
+        </div>
+        <h1 class="post-title">terms of use</h1>
+        <div class="post-body">
+            <p>Open Decks is operated from Canada to share articles and music. We do not charge or seek to make money by any means. By creating an account you agree to this notice. Contact: <a href="mailto:dj@opendecks.ca">dj@opendecks.ca</a>.</p>
+            <p>We store your username, a hash of your password, your email, your articles and images, and request data (IP address, browser, language, and approximate location from our host). We use this to run the site, keep it secure, and fight spam, bots or abuse. We do not sell it in any way or use it for marketing. We keep it while your account or an article exists, and longer only for security or a legal obligation.</p>
+            <p>You are responsible for what you publish. Do not publish anything illegal. We do not review articles before they are published, and we are not their author. If we learn of illegal content, we will remove it. We may remove an article or an account. The site is as-is, and we may change or stop it at any time. If a privacy law gives you a right to see or delete what we hold, write to us. That right still applies.</p>
+        </div>
+    </div>
+</body>
+</html>

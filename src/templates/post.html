@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'seo_head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='opendecks.css') }}">
+</head>
+<body>
+    <div class="read-page">
+        <div class="nav-row">
+            <a class="nav-link" href="{{ url_for('home.index') }}">back</a>
+            {% if post and can_edit %}
+                <a class="nav-link" href="{{ url_for('home.edit_post', slug=post.slug) }}">edit</a>
+                <form method="POST" action="{{ url_for('home.remove_post', slug=post.slug) }}" onsubmit="return confirm('delete this post? u sureee?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="nav-link" type="submit">delete</button>
+                </form>
+            {% endif %}
+        </div>
+        {% if not post %}
+            <p>yo dawg. post not found.</p>
+        {% else %}
+            <h1 class="post-title">{{ post.title }}</h1>
+            <div class="post-meta muted">
+                {{ post.author_username }}
+                {{ post.created_at|long_date }}
+                {% if post.updated_at|long_date != post.created_at|long_date %}
+                    · updated {{ post.updated_at|long_date }}
+                {% endif %}
+            </div>
+            <div class="post-body">{{ body_html }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>

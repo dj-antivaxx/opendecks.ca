@@ -10,15 +10,17 @@
    ```
 
 2. **Configure Environment Variables**:
-   Create a `.env` file in the root directory. Without these, the application will still function smoothly but will silently skip network notifications.
+   Create a `.env` file in the root directory.
    ```env
-   # Notifications & APIs
-   GMAIL_SENDER_EMAIL=dj.antivaxx@gmail.com
-   GMAIL_APP_PASSWORD=your_16_char_google_app_password
-   DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
-   
-   # Security (Auto-generated if left blank)
+   # Required in production (Vercel). Locally, SQLite + disk uploads are used if these are unset.
    SECRET_KEY=your_secure_flask_encryption_key
+   DATABASE_URL=postgres://...  
+   BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
+   ADMIN_USERS=antivaxx
+   # Optional. Canonical origin for links and the sitemap. Defaults to https://opendecks.ca
+   # SITE_URL=https://opendecks.ca
+   # Optional. Discord channel webhook. 
+   # DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
    ```
 
 3. **Run Locally**:
