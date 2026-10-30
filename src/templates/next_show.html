@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'seo_head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='opendecks.css') }}">
+</head>
+<body>
+    <div class="read-page write-page">
+        <div class="nav-row">
+            <a class="nav-link" href="{{ url_for('home.index') }}">back</a>
+        </div>
+        <h1 class="post-title">edit next transmission info</h1>
+        {% for err in errors %}
+            <div class="form-error">{{ err }}</div>
+        {% endfor %}
+        {% if form.errors %}
+            {% for field, errs in form.errors.items() %}
+                {% for err in errs %}
+                    <div class="form-error">{{ err }}</div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.title.label }} {{ form.title() }}
+            <div class="next-show-row">
+                <div class="next-show-date">{{ form.show_date.label }} {{ form.show_date() }}</div>
+                <div class="next-show-time">{{ form.show_time.label }} {{ form.show_time() }}</div>
+                <div class="next-show-length">{{ form.hours.label }} {{ form.hours() }}</div>
+            </div>
+            {{ form.save() }}
+        </form>
+        {% if custom %}
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="reset">
+                <button class="nav-link" type="submit">use default schedule (see n10.as for more inf)</button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

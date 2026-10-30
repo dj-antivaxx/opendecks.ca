@@ -8,62 +8,73 @@
 </head>
 <body class="center-page">
     <div class="home-stack">
-        <div id="date-display">...</div>
+        <div id="show-title">{{ show_title }}</div>
+        <div id="date-display">{{ show_when }}</div>
         <div id="countdown-display">--d --h --m --s</div>
 
         {% if current_user %}
             <div>logged as {{ current_user.username }}{% if user_is_admin %}-gooner{% endif %}</div>
-            <a class="toggle-link" href="{{ url_for('home.write') }}">write</a>
-            <form method="POST" action="{{ url_for('home.logout') }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button class="toggle-link" type="submit">log out</button>
-            </form>
+            <div class="dropdown-block">
+                <a href="#" class="toggle-link" id="toggle-user">user menu</a>
+                <div id="user-list" class="boxed-list menu-box hidden">
+                    <a class="toggle-link" href="{{ url_for('home.write') }}">write</a>
+                    {% if user_is_admin %}
+                        <a class="toggle-link" href="{{ url_for('home.episodes') }}">edit show list</a>
+                        <a class="toggle-link" href="{{ url_for('home.next_show') }}">edit next show</a>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('home.logout') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="toggle-link" type="submit">log out</button>
+                    </form>
+                </div>
+            </div>
         {% else %}
             <div class="dropdown-block">
-                <a href="#" class="toggle-link" id="toggle-login">log in</a>
-                <form method="POST" class="auth-form {% if auth_panel != 'login' %}hidden{% endif %}" id="login-panel">
-                    {{ login_form.hidden_tag() }}
-                    {{ login_form.username() }}
-                    {{ login_form.password() }}
-                    {% if login_error %}
-                        <div class="auth-error">{{ login_error }}</div>
-                    {% endif %}
-                    {% if login_form.errors %}
-                        {% for field, errs in login_form.errors.items() %}
-                            {% for err in errs %}
-                                <div class="form-error">{{ err }}</div>
+                <a href="#" class="toggle-link" id="toggle-enter">enter</a>
+                <div id="enter-list" class="boxed-list menu-box {% if not auth_panel %}hidden{% endif %}">
+                    <a href="#" class="toggle-link" id="toggle-login">log in</a>
+                    <form method="POST" class="auth-form {% if auth_panel != 'login' %}hidden{% endif %}" id="login-panel">
+                        {{ login_form.hidden_tag() }}
+                        {{ login_form.username() }}
+                        {{ login_form.password() }}
+                        {% if login_error %}
+                            <div class="auth-error">{{ login_error }}</div>
+                        {% endif %}
+                        {% if login_form.errors %}
+                            {% for field, errs in login_form.errors.items() %}
+                                {% for err in errs %}
+                                    <div class="form-error">{{ err }}</div>
+                                {% endfor %}
                             {% endfor %}
-                        {% endfor %}
-                    {% endif %}
-                    <div class="auth-actions">
-                        {{ login_form.login() }}
-                    </div>
-                </form>
-            </div>
-
-            <div class="dropdown-block">
-                <a href="#" class="toggle-link" id="toggle-signup">sign up</a>
-                <form method="POST" class="auth-form {% if auth_panel != 'signup' %}hidden{% endif %}" id="signup-panel">
-                    {{ signup_form.hidden_tag() }}
-                    {{ signup_form.username() }}
-                    {{ signup_form.password() }}
-                    {{ signup_form.email() }}
-                    {{ signup_form.od_hp(class_='hp', placeholder='') }}
-                    {% if signup_error %}
-                        <div class="auth-error">{{ signup_error }}</div>
-                    {% endif %}
-                    {% if signup_form.errors %}
-                        {% for field, errs in signup_form.errors.items() %}
-                            {% for err in errs %}
-                                <div class="form-error">{{ err }}</div>
+                        {% endif %}
+                        <div class="auth-actions">
+                            {{ login_form.login() }}
+                        </div>
+                        <p class="terms-row"><a href="{{ url_for('home.forgot') }}">forgot password</a></p>
+                    </form>
+                    <a href="#" class="toggle-link" id="toggle-signup">sign up</a>
+                    <form method="POST" class="auth-form {% if auth_panel != 'signup' %}hidden{% endif %}" id="signup-panel">
+                        {{ signup_form.hidden_tag() }}
+                        {{ signup_form.username() }}
+                        {{ signup_form.password() }}
+                        {{ signup_form.email() }}
+                        {{ signup_form.od_hp(class_='hp', placeholder='') }}
+                        {% if signup_error %}
+                            <div class="auth-error">{{ signup_error }}</div>
+                        {% endif %}
+                        {% if signup_form.errors %}
+                            {% for field, errs in signup_form.errors.items() %}
+                                {% for err in errs %}
+                                    <div class="form-error">{{ err }}</div>
+                                {% endfor %}
                             {% endfor %}
-                        {% endfor %}
-                    {% endif %}
-                    <div class="auth-actions">
-                        {{ signup_form.signup() }}
-                    </div>
-                    <p class="terms-row">*by signing up you agree to the <a href="{{ url_for('home.terms') }}">terms</a>, dawg.</p>
-                </form>
+                        {% endif %}
+                        <div class="auth-actions">
+                            {{ signup_form.signup() }}
+                        </div>
+                        <p class="terms-row">*by signing up you agree to the <a href="{{ url_for('home.terms') }}">terms</a>, dawg.</p>
+                    </form>
+                </div>
             </div>
         {% endif %}
 
@@ -73,7 +84,7 @@
                 {% if shows %}
                     {% for show in shows %}
                         <div class="episode-item">
-                            <div class="episode-header" onclick="togglePlayer('{{ show.id }}', '{{ show.mixcloud_url }}')">
+                            <div class="episode-header" data-show-id="{{ show.id }}" data-mixcloud-url="{{ show.mixcloud_url }}">
                                 <span class="episode-date">[{{ show.date }}]</span>
                                 <span class="episode-title">{{ show.title }}</span>
                             </div>
@@ -112,70 +123,70 @@
         </div>
     </div>
 
+    <script id="next-show" type="application/json">{{ next_show|tojson }}</script>
     <script>
-        function getNextTransmission() {
-            const FRIDAY = 5;
-            const FOURTH_WEEK_OFFSET_DAYS = 21;
-            const SHOW_START_HOUR_EASTERN = 21;
-            const SHOW_END_HOUR_EASTERN = 22;
-            const EDT_HOURS_BEHIND_UTC = 4;
-            const EST_HOURS_BEHIND_UTC = 5;
-            const TWO_AM_EST_AS_UTC = 7;
-            const TWO_AM_EDT_AS_UTC = 6;
+        const nextShow = JSON.parse(document.getElementById('next-show').textContent);
 
-            let now = new Date().getTime();
-            for (let i = 0; i < 3; i++) {
-                let d = new Date();
-                let year = d.getFullYear();
-                let month = d.getMonth() + i;
-                if (month > 11) {
-                    year += Math.floor(month / 12);
-                    month = month % 12;
-                }
-                let firstDay = new Date(Date.UTC(year, month, 1));
-                let dayOfWeek = firstDay.getUTCDay();
-                let offset = (FRIDAY - dayOfWeek + 7) % 7;
-                let fourthFriday = 1 + offset + FOURTH_WEEK_OFFSET_DAYS;
-                let marchSecondSunday = 1 + (7 - new Date(Date.UTC(year, 2, 1)).getUTCDay()) % 7 + 7;
-                let novFirstSunday = 1 + (7 - new Date(Date.UTC(year, 10, 1)).getUTCDay()) % 7;
-                let startEDT = Date.UTC(year, 2, marchSecondSunday, TWO_AM_EST_AS_UTC);
-                let endEDT = Date.UTC(year, 10, novFirstSunday, TWO_AM_EDT_AS_UTC);
-                let targetUTCStartT = Date.UTC(year, month, fourthFriday, SHOW_START_HOUR_EASTERN);
-                let tzOffset = (targetUTCStartT >= startEDT && targetUTCStartT < endEDT) ? EDT_HOURS_BEHIND_UTC : EST_HOURS_BEHIND_UTC;
-                let startTime = Date.UTC(year, month, fourthFriday, SHOW_START_HOUR_EASTERN + tzOffset);
-                let endTime = Date.UTC(year, month, fourthFriday, SHOW_END_HOUR_EASTERN + tzOffset);
-                if (now < endTime) {
-                    return { start: startTime, end: endTime, month: month, day: fourthFriday, year: year };
-                }
-            }
+        function easternStamp(ms) {
+            const parts = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/New_York',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hourCycle: 'h23',
+                timeZoneName: 'short',
+            }).formatToParts(new Date(ms));
+            const pick = (type) => parts.find((part) => part.type === type).value;
+            return pick('month') + ' ' + pick('day') + ', ' + pick('year') + ' @ ' + pick('hour') + ':' + pick('minute') + ' ' + pick('timeZoneName');
         }
 
+        let endReloadQueued = false;
         function updateCountdown() {
-            let next = getNextTransmission();
-            let now = new Date().getTime();
-            let display = document.getElementById("countdown-display");
-            let dateDisplay = document.getElementById("date-display");
-            let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            let dateStr = `${monthNames[next.month]} ${next.day}, ${next.year}`;
-            if (now >= next.start && now < next.end) {
-                dateDisplay.innerHTML = `TRANSMISSION IS LIVE.`;
-                display.innerHTML = `00d 00h 00m 00s`;
+            const now = Date.now();
+            const start = nextShow.start;
+            const end = start + nextShow.minutes * 60 * 1000;
+            const display = document.getElementById('countdown-display');
+            const dateDisplay = document.getElementById('date-display');
+            if (now >= end) {
+                dateDisplay.textContent = 'TRANSMISSION ENDED.';
+                display.textContent = '00d 00h 00m 00s';
+                if (!endReloadQueued) {
+                    let tries = 0;
+                    const key = 'show-ended-' + end;
+                    try {
+                        tries = Number(sessionStorage.getItem(key) || '0');
+                        if (tries < 12) sessionStorage.setItem(key, String(tries + 1));
+                    } catch (err) {
+                        tries = 0;
+                    }
+                    if (tries < 12) {
+                        endReloadQueued = true;
+                        setTimeout(function() { window.location.reload(); }, 5000);
+                    }
+                }
                 return;
             }
-            let localDate = new Date(next.start);
-            let localOptions = { weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short' };
-            let localTimeStr = localDate.toLocaleString('en-US', localOptions);
-            let displayStr = `${dateStr} @ 21:00 EST`;
-            if (!localTimeStr.includes('EST') && !localTimeStr.includes('EDT')) {
-                displayStr += ` (${localTimeStr})`;
+            if (now >= start) {
+                dateDisplay.textContent = 'TRANSMISSION IS LIVE.';
+                display.textContent = '00d 00h 00m 00s';
+                return;
             }
-            dateDisplay.innerHTML = displayStr;
-            let diff = next.start - now;
-            let days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            display.innerHTML = `${days}d ${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(seconds).padStart(2,'0')}s`;
+            const localTimeStr = new Date(start).toLocaleString('en-US', {
+                weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false, timeZoneName: 'short',
+            });
+            let displayStr = easternStamp(start);
+            if (localTimeStr.indexOf('EST') === -1 && localTimeStr.indexOf('EDT') === -1) {
+                displayStr += ' (' + localTimeStr + ')';
+            }
+            dateDisplay.textContent = displayStr;
+            const diff = start - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            display.textContent = days + 'd ' + String(hours).padStart(2, '0') + 'h ' + String(minutes).padStart(2, '0') + 'm ' + String(seconds).padStart(2, '0') + 's';
         }
 
         setInterval(updateCountdown, 1000);
@@ -212,6 +223,12 @@
             }
         }
 
+        document.querySelectorAll('.episode-header').forEach(function(el) {
+            el.addEventListener('click', function() {
+                togglePlayer(el.getAttribute('data-show-id'), el.getAttribute('data-mixcloud-url'));
+            });
+        });
+
         function bindToggle(linkId, listId, openLabel, closedLabel, extraClose) {
             const link = document.getElementById(linkId);
             const list = document.getElementById(listId);
@@ -232,6 +249,15 @@
             });
         }
 
+        bindToggle('toggle-enter', 'enter-list', 'enter -', 'enter', function() {
+            ['login', 'signup'].forEach(function(name) {
+                const panel = document.getElementById(name + '-panel');
+                const link = document.getElementById('toggle-' + name);
+                if (panel) panel.classList.add('hidden');
+                if (link) link.textContent = name === 'login' ? 'log in' : 'sign up';
+            });
+        });
+        bindToggle('toggle-user', 'user-list', 'user menu -', 'user menu');
         bindToggle('toggle-login', 'login-panel', 'log in -', 'log in');
         bindToggle('toggle-signup', 'signup-panel', 'sign up -', 'sign up');
         bindToggle('toggle-episodes', 'episodes-list', 'past episodes -', 'past episodes', function() {
