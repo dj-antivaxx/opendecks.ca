@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'seo_head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='opendecks.css') }}">
+</head>
+<body>
+    <div class="read-page write-page">
+        <div class="nav-row">
+            <a class="nav-link" href="{{ url_for('home.index') }}">back</a>
+        </div>
+        <h1 class="post-title">past transmissions</h1>
+        {% for err in errors %}
+            <div class="form-error">{{ err }}</div>
+        {% endfor %}
+        {% if form.errors %}
+            {% for field, errs in form.errors.items() %}
+                {% for err in errs %}
+                    <div class="form-error">{{ err }}</div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        {% if shows %}
+            {% for show in shows %}
+                <div class="episode-item">
+                    <div class="episode-title">{{ show.title }}</div>
+                    <div class="episode-url muted">{{ show.date }}</div>
+                    <div class="episode-url muted">{{ show.mixcloud_url }}</div>
+                    <div class="row-actions">
+                        <a class="nav-link" href="{{ url_for('home.edit_episode', show_id=show.id) }}">edit</a>
+                        <form method="POST" action="{{ url_for('home.remove_episode', show_id=show.id) }}" onsubmit="return confirm('delete this transmission?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="nav-link" type="submit">delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="muted">no transmissions available yet.</p>
+        {% endif %}
+        <h1 class="post-title add-title">log a transmission</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.title.label }} {{ form.title() }}
+            {{ form.show_date.label }} {{ form.show_date() }}
+            {{ form.mixcloud_url.label }} {{ form.mixcloud_url() }}
+            {{ form.save() }}
+        </form>
+    </div>
+</body>
+</html>

@@ -37,11 +37,16 @@ a {
     text-align: center;
 }
 
-#date-display, #countdown-display {
+#show-title, #date-display, #countdown-display {
     font-size: 16px;
     font-weight: normal;
     letter-spacing: 1px;
-    line-height: 1;
+    line-height: 1.3;
+}
+
+#show-title {
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 .col-home {
@@ -186,6 +191,16 @@ a {
     margin-top: 15px;
 }
 
+.menu-box {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.menu-box .auth-form { margin-top: 0; }
+
 .episode-item, .blog-item {
     margin-bottom: 15px;
     border-bottom: 1px dotted #444;
@@ -201,15 +216,40 @@ a {
 .episode-header {
     display: flex;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
     cursor: pointer;
     font-size: 14px;
+    gap: 15px;
 }
 
 .episode-header:hover { color: #fff; }
 
 .episode-date, .muted { color: #888; }
-.episode-date { margin-right: 15px; white-space: nowrap; }
+.episode-date { white-space: nowrap; }
+.episode-title { word-wrap: break-word; min-width: 0; }
+
+.notice {
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center;
+    width: 100%;
+}
+
+.episode-url {
+    font-size: 12px;
+    word-break: break-all;
+    margin: 6px 0 8px;
+}
+
+.row-actions {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.row-actions form { display: inline; margin: 0; }
+.add-title { margin-top: 28px; }
 
 .hidden { display: none !important; }
 .no-episodes, .empty-note { font-size: 14px; color: #888; text-align: center; }
@@ -309,6 +349,28 @@ a {
 
 .write-page { width: 100%; }
 .write-page label { display: block; margin: 14px 0 6px; font-size: 14px; }
+
+.next-show-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.next-show-date,
+.next-show-time,
+.next-show-length {
+    flex: 1 1 9rem;
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .next-show-date,
+    .next-show-time,
+    .next-show-length {
+        flex-basis: 100%;
+    }
+}
 
 .write-page input[type="text"],
 .write-page textarea,

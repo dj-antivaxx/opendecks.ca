@@ -9,6 +9,7 @@ from flask_wtf.csrf import CSRFProtect
 from blueprints import home
 from content import iso_day, long_date
 from database import init_schema
+from notify import mail_configured
 from runtime import artifacts_dir, on_vercel
 
 app = Flask(__name__)
@@ -54,6 +55,9 @@ app.config['WTF_CSRF_TIME_LIMIT'] = None
 
 csrf = CSRFProtect(app)
 init_schema()
+
+if is_vercel and not mail_configured():
+    print('password reset email feature fucking off until GMAIL_SMTP_USER, GMAIL_SENDER_EMAIL, and GMAIL_APP_PASSWORD are set')
 
 
 @app.after_request

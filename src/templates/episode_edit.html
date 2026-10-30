@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'seo_head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='opendecks.css') }}">
+</head>
+<body>
+    <div class="read-page write-page">
+        <div class="nav-row">
+            <a class="nav-link" href="{{ url_for('home.episodes') }}">back</a>
+        </div>
+        <h1 class="post-title">{{ show.title }}</h1>
+        {% for err in errors %}
+            <div class="form-error">{{ err }}</div>
+        {% endfor %}
+        {% if form.errors %}
+            {% for field, errs in form.errors.items() %}
+                {% for err in errs %}
+                    <div class="form-error">{{ err }}</div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.title.label }} {{ form.title() }}
+            {{ form.show_date.label }} {{ form.show_date() }}
+            {{ form.mixcloud_url.label }} {{ form.mixcloud_url() }}
+            {{ form.save() }}
+        </form>
+    </div>
+</body>
+</html>

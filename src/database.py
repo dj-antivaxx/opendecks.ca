@@ -1,3 +1,5 @@
+import hashlib
+import json
 import os
 import sqlite3
 from contextlib import closing
@@ -58,7 +60,51 @@ CREATE TABLE IF NOT EXISTS stored_images (
 )
 """
 
-SCHEMA = (USERS, POSTS, POSTS_INDEX, STORED)
+SHOWS = f"""
+CREATE TABLE IF NOT EXISTS shows (
+    {_ID},
+    title TEXT NOT NULL,
+    show_date TEXT NOT NULL,
+    mixcloud_url TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
+"""
+
+SHOWS_INDEX = """
+CREATE INDEX IF NOT EXISTS idx_shows_show_date ON shows(show_date DESC, id DESC)
+"""
+
+RESETS = f"""
+CREATE TABLE IF NOT EXISTS password_resets (
+    {_ID},
+    user_id INTEGER,
+    token_hash TEXT UNIQUE,
+    expires_at INTEGER NOT NULL,
+    used_at INTEGER,
+    created_at INTEGER NOT NULL,
+    request_ip TEXT
+)
+"""
+
+RESETS_IP = """
+CREATE INDEX IF NOT EXISTS idx_resets_ip ON password_resets(request_ip, created_at)
+"""
+
+RESETS_USER = """
+CREATE INDEX IF NOT EXISTS idx_resets_user ON password_resets(user_id, created_at)
+"""
+
+META = """
+CREATE TABLE IF NOT EXISTS site_meta (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+)
+"""
+
+SCHEMA = (
+    USERS, POSTS, POSTS_INDEX, STORED,
+    SHOWS, SHOWS_INDEX, RESETS, RESETS_IP, RESETS_USER, META,
+)
 
 
 def _sqlite_path():
@@ -95,11 +141,62 @@ def get_db_connection():
     return conn
 
 
+def _column_names(conn, table):
+    if table != 'users':
+        raise ValueError(table)
+    if POSTGRES:
+        cur = conn.execute(
+            "SELECT column_name FROM information_schema.columns WHERE table_name = %s",
+            (table,),
+        )
+        return {row['column_name'] for row in cur.fetchall()}
+    cur = conn.execute(f'PRAGMA table_info({table})')
+    return {row['name'] for row in cur.fetchall()}
+
+
+def _ignore(conn, sql, params):
+    if POSTGRES:
+        statement = sql + ' ON CONFLICT DO NOTHING'
+    else:
+        statement = sql.replace('INSERT INTO', 'INSERT OR IGNORE INTO', 1)
+    conn.execute(_sql(statement), params)
+
+
+def _seed_shows(conn):
+    if _row(conn.execute(_sql('SELECT value FROM site_meta WHERE key = ?'), ('shows_seeded',)).fetchone()):
+        return
+    existing = _row(conn.execute('SELECT id FROM shows LIMIT 1').fetchone())
+    if existing is None:
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'shows.json')
+        try:
+            with open(path, encoding='utf-8') as handle:
+                catalog = json.load(handle)
+        except (OSError, ValueError):
+            return
+        if not isinstance(catalog, list):
+            return
+        for show in catalog:
+            title = (show.get('title') or '').strip()
+            day = (show.get('date') or '').strip()
+            url = (show.get('mixcloud_url') or '').strip()
+            if not title or not day or not url:
+                continue
+            _ignore(
+                conn,
+                'INSERT INTO shows (title, show_date, mixcloud_url) VALUES (?, ?, ?)',
+                (title, day, url),
+            )
+    _ignore(conn, 'INSERT INTO site_meta (key, value) VALUES (?, ?)', ('shows_seeded', '1'))
+
+
 def init_schema():
     with closing(get_db_connection()) as conn:
         with conn:
             for stmt in SCHEMA:
                 conn.execute(stmt.strip())
+            if 'password_changed_at' not in _column_names(conn, 'users'):
+                conn.execute('ALTER TABLE users ADD COLUMN password_changed_at INTEGER')
+            _seed_shows(conn)
 
 
 def fetch_one(sql, params=()):
@@ -133,7 +230,10 @@ def insert_returning_id(sql, params=()):
 
 
 def get_session_user(user_id):
-    return fetch_one('SELECT id, username FROM users WHERE id = ?', (user_id,))
+    return fetch_one(
+        'SELECT id, username, password_changed_at FROM users WHERE id = ?',
+        (user_id,),
+    )
 
 
 def get_user_by_username(username):
@@ -143,7 +243,7 @@ def get_user_by_username(username):
 def get_user_by_email(email):
     if not email:
         return None
-    return fetch_one('SELECT * FROM users WHERE email = ?', (email,))
+    return fetch_one('SELECT * FROM users WHERE lower(email) = lower(?)', (email.strip(),))
 
 
 def create_user(username, password_hash, email, meta):
@@ -253,6 +353,180 @@ def record_stored_image(url):
 
 def delete_stored_image(url):
     execute('DELETE FROM stored_images WHERE url = ?', (url,))
+
+
+def list_shows():
+    return fetch_all(
+        """
+        SELECT id, title, show_date AS date, mixcloud_url
+        FROM shows
+        ORDER BY show_date DESC, id DESC
+        """
+    )
+
+
+def count_shows():
+    row = fetch_one('SELECT COUNT(*) AS n FROM shows')
+    return int(row['n']) if row else 0
+
+
+def get_show(show_id):
+    return fetch_one(
+        'SELECT id, title, show_date AS date, mixcloud_url FROM shows WHERE id = ?',
+        (show_id,),
+    )
+
+
+def create_show(title, show_date, mixcloud_url):
+    return insert_returning_id(
+        'INSERT INTO shows (title, show_date, mixcloud_url) VALUES (?, ?, ?)',
+        (title, show_date, mixcloud_url),
+    )
+
+
+def update_show(show_id, title, show_date, mixcloud_url):
+    execute(
+        'UPDATE shows SET title = ?, show_date = ?, mixcloud_url = ? WHERE id = ?',
+        (title, show_date, mixcloud_url, show_id),
+    )
+
+
+def delete_show(show_id):
+    execute('DELETE FROM shows WHERE id = ?', (show_id,))
+
+
+def get_meta(key):
+    row = fetch_one('SELECT value FROM site_meta WHERE key = ?', (key,))
+    return row['value'] if row else None
+
+
+def set_meta(key, value):
+    execute(
+        """
+        INSERT INTO site_meta (key, value) VALUES (?, ?)
+        ON CONFLICT (key) DO UPDATE SET value = excluded.value
+        """,
+        (key, value),
+    )
+
+
+def delete_meta(key):
+    execute('DELETE FROM site_meta WHERE key = ?', (key,))
+
+
+def get_custom_next_show():
+    raw = get_meta('next_show')
+    if not raw:
+        return None
+    try:
+        data = json.loads(raw)
+        start = int(data['start'])
+        minutes = float(data['minutes'])
+        title = (data.get('title') or '').strip()
+    except (TypeError, ValueError, KeyError):
+        return None
+    if not title or not (minutes >= 1):
+        return None
+    hours = data.get('hours')
+    if not isinstance(hours, str) or not hours.strip() or len(hours) > 8:
+        hours = None
+    else:
+        hours = hours.strip()
+    return {'title': title, 'start': start, 'minutes': minutes, 'hours': hours}
+
+
+def save_custom_next_show(title, start, minutes, hours):
+    set_meta('next_show', json.dumps({
+        'title': title,
+        'start': int(start),
+        'minutes': minutes,
+        'hours': hours,
+    }))
+
+
+def clear_custom_next_show():
+    delete_meta('next_show')
+
+
+def hash_reset_token(token):
+    return hashlib.sha256(token.encode('ascii')).hexdigest()
+
+
+def purge_resets(before):
+    execute('DELETE FROM password_resets WHERE created_at < ?', (before,))
+
+
+def count_reset_requests(since, user_id=None, ip=None):
+    if user_id is not None:
+        row = fetch_one(
+            'SELECT COUNT(*) AS n FROM password_resets WHERE user_id = ? AND created_at > ?',
+            (user_id, since),
+        )
+    else:
+        row = fetch_one(
+            'SELECT COUNT(*) AS n FROM password_resets WHERE request_ip = ? AND created_at > ?',
+            (ip, since),
+        )
+    return int(row['n']) if row else 0
+
+
+def create_reset(user_id, token_hash, expires_at, created_at, ip):
+    execute(
+        """
+        INSERT INTO password_resets (user_id, token_hash, expires_at, created_at, request_ip)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (user_id, token_hash, expires_at, created_at, ip),
+    )
+
+
+def forget_reset_token(token_hash):
+    """Drop a link that was never mailed. The row stays so the IP cap still counts it."""
+    execute(
+        'UPDATE password_resets SET user_id = NULL, token_hash = NULL WHERE token_hash = ?',
+        (token_hash,),
+    )
+
+
+def get_valid_reset(token_hash, now):
+    return fetch_one(
+        """
+        SELECT password_resets.id, password_resets.user_id, users.username
+        FROM password_resets
+        JOIN users ON users.id = password_resets.user_id
+        WHERE password_resets.token_hash = ?
+          AND password_resets.used_at IS NULL
+          AND password_resets.expires_at > ?
+        """,
+        (token_hash, now),
+    )
+
+
+def reset_password(reset_id, user_id, password_hash, now):
+    with closing(get_db_connection()) as conn:
+        with conn:
+            cur = conn.execute(
+                _sql(
+                    """
+                    UPDATE password_resets
+                    SET used_at = ?
+                    WHERE id = ? AND used_at IS NULL AND expires_at > ?
+                    RETURNING id
+                    """
+                ),
+                (now, reset_id, now),
+            )
+            if _row(cur.fetchone()) is None:
+                return False
+            conn.execute(
+                _sql('UPDATE users SET password_hash = ?, password_changed_at = ? WHERE id = ?'),
+                (password_hash, now, user_id),
+            )
+            conn.execute(
+                _sql('UPDATE password_resets SET used_at = ? WHERE user_id = ? AND used_at IS NULL'),
+                (now, user_id),
+            )
+            return True
 
 
 def list_posts():

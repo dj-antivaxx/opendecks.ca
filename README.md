@@ -16,11 +16,12 @@
    SECRET_KEY=your_secure_flask_encryption_key
    DATABASE_URL=postgres://...  
    BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
-   ADMIN_USERS=antivaxx
-   # Optional. Canonical origin for links and the sitemap. Defaults to https://opendecks.ca
-   # SITE_URL=https://opendecks.ca
-   # Optional. Discord channel webhook. 
-   # DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+   ADMIN_USERS=yomama
+   SITE_URL=https://opendecks.ca
+   GMAIL_SMTP_USER=you@gmail.com
+   GMAIL_SENDER_EMAIL=yomama@opendecks.ca
+   GMAIL_APP_PASSWORD=xxxxxxxxxxxxxxxx
+   DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
    ```
 
 3. **Run Locally**:

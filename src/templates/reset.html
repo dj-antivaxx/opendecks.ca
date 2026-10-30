@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'seo_head.html' %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='opendecks.css') }}">
+</head>
+<body class="center-page">
+    <div class="home-stack">
+        <a class="toggle-link" href="{{ url_for('home.index') }}">back</a>
+        <div>new password</div>
+        {% if message %}
+            <div class="{% if ok %}auth-error{% else %}notice{% endif %}">{{ message }}</div>
+        {% endif %}
+        {% if not ok %}
+            <a class="toggle-link" href="{{ url_for('home.forgot') }}">forgot password</a>
+        {% else %}
+            <form method="POST" class="auth-form">
+                {{ form.hidden_tag() }}
+                {{ form.password() }}
+                {{ form.confirm() }}
+                {% if form.errors %}
+                    {% for field, errs in form.errors.items() %}
+                        {% for err in errs %}
+                            <div class="form-error">{{ err }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}
+                <div class="auth-actions">
+                    {{ form.save() }}
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
